@@ -1,7 +1,11 @@
 package example
 
-@CName(externName = "example_create_thing", shortName = "create_thing")
-fun createThing(): Int = 0
+import com.bugsnag.example.kotlinmp.platformId
+import kotlinx.cinterop.COpaquePointer
+import kotlinx.cinterop.StableRef
+
+@CName(externName = "testFun", shortName = "testFun")
+fun createThing(): Int = platformId()
 
 
 //@Serializable
