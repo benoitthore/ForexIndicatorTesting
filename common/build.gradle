@@ -1,0 +1,30 @@
+plugins {
+    id("kotlin-multiplatform")
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    targets {
+        jvm()
+        mingwX86()
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-common')
+            }
+        }
+        jvmMain {
+            dependencies {
+                implementation kotlin('stdlib')
+            }
+        }
+    }
+}
+// workaround for https://youtrack.jetbrains.com/issue/KT-27170
+configurations {
+    compileClasspath
+}
+
