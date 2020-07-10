@@ -31,14 +31,8 @@ interface MT4API {
     fun actionResponse(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>)
 }
 
-interface NewMT4API {
-    fun onNewBar(): List<MT4Request.DataRequest<*>>
-    fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): MT4Request.PositionAction?
-    fun actionCallback(success: Boolean)
-}
-
-class NewMT4WrapperImpl(
-        private val newMT4API: NewMT4API
+class MT4APIImpl(
+        private val handler: MT4Handler
 ) : MT4API {
 
     private var requests: MutableList<MT4Request.DataRequest<*>> = mutableListOf()
@@ -46,7 +40,7 @@ class NewMT4WrapperImpl(
     private var action: MT4Request.PositionAction? = null
 
     override fun onNewBar() {
-        requests = newMT4API.onNewBar().toMutableList()
+        requests = handler.onNewBar().toMutableList()
     }
 
 
@@ -60,14 +54,14 @@ class NewMT4WrapperImpl(
 
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
 
-//        if (requests.isNotEmpty()) {
-        requests.removeAt(0).let { action ->
-            responses[action] = arrayPointer.copy()
+        if (requests.isNotEmpty()) {
+            requests.removeAt(0).let { action ->
+                responses[action] = arrayPointer.copy()
+            }
         }
-//    }
 
         if (requests.isEmpty()) {
-            action = newMT4API.responseCallback(responses)
+            action = handler.responseCallback(responses)
         }
     }
 
@@ -78,7 +72,7 @@ class NewMT4WrapperImpl(
     override fun actionResponse(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
         action
                 ?.buildFromResponse(arrayPointer)
-                ?.let { actionResult -> newMT4API.actionCallback(actionResult) }
+                ?.let { actionResult -> handler.actionCallback(actionResult) }
     }
 }
 

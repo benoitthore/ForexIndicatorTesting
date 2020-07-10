@@ -1,4 +1,4 @@
-package com.bugsnag.example.kotlinmp.lib.api
+package com.bugsnag.example.kotlinmp.lib
 
 // Don't use runCatching
 //val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
