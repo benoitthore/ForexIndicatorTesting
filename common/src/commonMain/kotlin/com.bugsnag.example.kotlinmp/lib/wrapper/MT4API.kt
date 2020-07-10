@@ -1,6 +1,5 @@
-package com.bugsnag.example.kotlinmp.api
+package com.bugsnag.example.kotlinmp.lib.wrapper
 
-import com.bugsnag.example.kotlinmp.api.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
@@ -14,7 +13,7 @@ import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
     This can easily become a suspend function
  */
 
-interface NewMT4Wrapper {
+interface MT4API {
 
     // Notify of new bar to prepare request
     fun onNewBar()
@@ -40,7 +39,7 @@ interface NewMT4API {
 
 class NewMT4WrapperImpl(
         private val newMT4API: NewMT4API
-) : NewMT4Wrapper {
+) : MT4API {
 
     private var requests: MutableList<MT4Request.DataRequest<*>> = mutableListOf()
     private val responses: MutableMap<MT4Request.DataRequest<*>, Iterable<Double>> = mutableMapOf()

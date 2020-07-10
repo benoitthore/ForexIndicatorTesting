@@ -1,4 +1,4 @@
-package com.bugsnag.example.kotlinmp.api
+package com.bugsnag.example.kotlinmp.lib.wrapper
 
 enum class MT4RequestId {
     GetClosePrice,

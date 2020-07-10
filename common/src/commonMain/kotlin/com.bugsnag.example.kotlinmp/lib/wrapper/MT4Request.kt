@@ -1,5 +1,7 @@
-package com.bugsnag.example.kotlinmp.api
+package com.bugsnag.example.kotlinmp.lib.wrapper
 
+import com.bugsnag.example.kotlinmp.lib.api.Indicator
+import com.bugsnag.example.kotlinmp.lib.api.Position
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 

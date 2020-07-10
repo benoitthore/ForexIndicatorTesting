@@ -1,6 +1,7 @@
 package com.bugsnag.example.kotlinmp
 
-import com.bugsnag.example.kotlinmp.api.*
+import com.bugsnag.example.kotlinmp.lib.api.*
+import com.bugsnag.example.kotlinmp.lib.wrapper.*
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 import java.lang.IllegalArgumentException
@@ -67,7 +68,7 @@ Add Channel to MT4WrapperImpl
 Create a test scenario where an EA asks for indicator value, result should be 456
 
  */
-class MockMT4(val wrapper: NewMT4Wrapper) {
+class MockMT4(val wrapper: MT4API) {
     private val DEFAULT_VALUE: Double = -1.0
     val actionPointer = DEFAULT_VALUE.toInt().p
     val arrayPointer = MutableList(10) { DEFAULT_VALUE }.p
@@ -82,6 +83,8 @@ class MockMT4(val wrapper: NewMT4Wrapper) {
 
         // Starts the process in the EA
         wrapper.onNewBar()
+        exchange(DATA_REQUEST)
+        exchange(POSITION_CONTROL)
 
         // Communication loop between EA and mt4
         var isRequesting: Boolean
@@ -101,6 +104,35 @@ class MockMT4(val wrapper: NewMT4Wrapper) {
         processData(actionPointer, arrayPointer)
         wrapper.actionResponse(actionPointer, arrayPointer)
     }
+
+    // TODO Make this work like so
+    /*
+
+    fun onTick() {
+        // TODO Return if not new candle
+        wrapper.onNewBar()
+        exchange(DATA_REQUEST)
+        exchange(POSITION_CONTROL)
+    }
+     */
+    private val DATA_REQUEST = 0
+    private val POSITION_CONTROL = 1
+    fun exchange(mode : Int){
+        var isRequesting: Boolean
+//        wrapper.setMode(mode)
+        do {
+            //reset (probably not needed)
+            reset(arrayPointer)
+            actionPointer.value = DEFAULT_VALUE.toInt()
+
+            isRequesting = wrapper.request(actionPointer, arrayPointer)
+            if (isRequesting) {
+                processData(actionPointer, arrayPointer)
+                wrapper.response(actionPointer, arrayPointer)
+            }
+        } while (isRequesting)
+    }
+
 
     private fun processData(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
         when (MT4RequestId.values()[actionPointer.value]) {
