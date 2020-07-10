@@ -1,6 +1,6 @@
 package com.bugsnag.example.kotlinmp.api.server.action
 
-import com.bugsnag.example.kotlinmp.api.client.Indicators
+import com.bugsnag.example.kotlinmp.api.client.Indicator
 import com.bugsnag.example.kotlinmp.api.client.Position
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
@@ -24,15 +24,11 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
     var response: T? = null
         private set
 
-    object Close : MT4Request<Unit>(MT4RequestId.Close) {
-        override fun buildFromResponse(data: Iterable<Double>) = Unit
-    }
-
     object GetClosePrice : MT4Request<Unit>(MT4RequestId.GetClosePrice) {
         override fun buildFromResponse(data: Iterable<Double>) = Unit
     }
 
-    class GetIndicatorValue(val indicator: Indicators) : MT4Request<Double>(MT4RequestId.GetIndicatorValue) {
+    class GetIndicatorValue(val indicator: Indicator) : MT4Request<Double>(MT4RequestId.GetIndicatorValue) {
         override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
             arrayPointer[0] = indicator.ordinal.toDouble()
         }
@@ -40,7 +36,7 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
         override fun buildFromResponse(data: Iterable<Double>) = data.first()
     }
 
-    class GetIndicatorNumberOfParams(val indicator: Indicators) : MT4Request<Int>(MT4RequestId.GetIndicatorNumberOfParams) {
+    class GetIndicatorNumberOfParams(val indicator: Indicator) : MT4Request<Int>(MT4RequestId.GetIndicatorNumberOfParams) {
         override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
             arrayPointer[0] = indicator.ordinal.toDouble()
         }

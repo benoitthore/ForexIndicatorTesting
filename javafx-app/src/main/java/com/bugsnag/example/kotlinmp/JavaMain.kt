@@ -1,15 +1,58 @@
 package com.bugsnag.example.kotlinmp
 
-import com.bugsnag.example.kotlinmp.api.client.Indicators
+import com.bugsnag.example.kotlinmp.api.client.Indicator
+import com.bugsnag.example.kotlinmp.api.client.Position
+import com.bugsnag.example.kotlinmp.api.server.NewMT4API
 import com.bugsnag.example.kotlinmp.api.server.action.MT4RequestId
-import com.bugsnag.example.kotlinmp.api.server.MT4Wrapper
-import com.bugsnag.example.kotlinmp.api.server.MT4WrapperImpl
+import com.bugsnag.example.kotlinmp.api.server.NewMT4Wrapper
+import com.bugsnag.example.kotlinmp.api.server.NewMT4WrapperImpl
+import com.bugsnag.example.kotlinmp.api.server.action.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
 
 fun main() {
-    val wrapper = MT4WrapperImpl()
+    val api = object : NewMT4API {
+
+        private val indicatorHistory = mutableMapOf<Indicator, MutableList<Double>>()
+
+        override fun onNewBar(): List<MT4Request<*>> = listOf(
+                MT4Request.GetIndicatorValue(Indicator.ATR)
+        )
+
+        override fun responseCallback(map: Map<MT4Request<*>, Iterable<Double>>): MT4Request.PositionAction? {
+            map.forEach { (request, response) ->
+                when (request) {
+                    MT4Request.GetClosePrice -> TODO()
+                    is MT4Request.GetIndicatorValue -> {
+                        indicatorHistory
+                                .getOrPut(request.indicator) { mutableListOf() }
+                                .add(request.buildFromResponse(response))
+                    }
+                    is MT4Request.GetIndicatorNumberOfParams -> TODO()
+                    is MT4Request.PositionAction.OpenPosition -> TODO()
+                    is MT4Request.PositionAction.UpdatePosition -> TODO()
+                    is MT4Request.PositionAction.ClosePosition -> TODO()
+                }
+            }
+
+            return getPosition(indicatorHistory)
+        }
+
+        fun getPosition(indicators: Map<Indicator, List<Double>>): MT4Request.PositionAction? {
+
+            val atrValue = (indicators[Indicator.ATR] ?: error("No ATR value")).first()
+            return MT4Request.PositionAction.OpenPosition(
+                    Position(Position.Type.LONG, 123, atrValue, atrValue)
+            )
+        }
+
+        override fun actionCallback(success: Boolean) {
+            println("actionCallback($success)")
+        }
+
+    }
+    val wrapper = NewMT4WrapperImpl(api)
     val mockMT4 = MockMT4(wrapper)
 
     mockMT4.onStart()
@@ -30,41 +73,43 @@ Add Channel to MT4WrapperImpl
 Create a test scenario where an EA asks for indicator value, result should be 456
 
  */
-class MockMT4(val wrapper: MT4Wrapper) {
-    private val DEFAULT_ARRAY_VALUE: Double = 0.0
-    private val DEFAULT_ACTION_VALUE: Int = MT4RequestId.Close.ordinal
-    val actionPointer = DEFAULT_ACTION_VALUE.p
-    val arrayPointer = MutableList(10) { DEFAULT_ARRAY_VALUE }.p
+class MockMT4(val wrapper: NewMT4Wrapper) {
+    private val DEFAULT_VALUE: Double = -1.0
+    val actionPointer = DEFAULT_VALUE.toInt().p
+    val arrayPointer = MutableList(10) { DEFAULT_VALUE }.p
 
     fun onStart() {
-        wrapper.onStart(actionPointer, arrayPointer)
+        // TODO
+//        wrapper.onStart(actionPointer, arrayPointer)
     }
 
     fun onTick() {
         // TODO Return if not new candle
 
         // Starts the process in the EA
-        wrapper.onNewCandle()
+        wrapper.onNewBar()
 
         // Communication loop between EA and mt4
+        var isRequesting: Boolean
         do {
             //reset (probably not needed)
             reset(arrayPointer)
-            actionPointer.value = DEFAULT_ACTION_VALUE
+            actionPointer.value = DEFAULT_VALUE.toInt()
 
-            wrapper.fillData(actionPointer, arrayPointer)
-            processData(actionPointer, arrayPointer)
-            wrapper.onDataReceived(actionPointer, arrayPointer)
+            isRequesting = wrapper.request(actionPointer, arrayPointer)
+            if (isRequesting) {
+                processData(actionPointer, arrayPointer)
+                wrapper.response(actionPointer, arrayPointer)
+            }
+        } while (isRequesting)
 
-
-        } while (actionPointer.value != MT4RequestId.Close.ordinal)
+        wrapper.action(actionPointer, arrayPointer)
+        processData(actionPointer, arrayPointer)
+        wrapper.actionResponse(actionPointer, arrayPointer)
     }
 
     private fun processData(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
         when (MT4RequestId.values()[actionPointer.value]) {
-            MT4RequestId.Close -> {
-                println("Closing")
-            }
             MT4RequestId.GetClosePrice -> TODO()
             MT4RequestId.GetIndicatorValue -> {
                 val indicator = indicatorIDToString(arrayPointer[0])
@@ -72,7 +117,23 @@ class MockMT4(val wrapper: MT4Wrapper) {
                 arrayPointer[0] = iCustom(indicator)
             }
             MT4RequestId.GetIndicatorNumberOfParams -> TODO()
-            MT4RequestId.OpenPosition -> TODO()
+            MT4RequestId.OpenPosition -> {
+                // TODO add open position logic
+                val type = arrayPointer[0]
+                val magicNumber = arrayPointer[1]
+                val volume = arrayPointer[2]
+                val stopLoss = arrayPointer[3]
+                val takeProfit = arrayPointer[4]
+                println("""
+                    Opening position:
+                    type=$type
+                    magicNumber=$magicNumber
+                    volume=$volume
+                    stopLoss=$stopLoss
+                    takeProfit=$takeProfit
+                """.trimIndent())
+
+            }
             MT4RequestId.ClosePosition -> TODO()
             MT4RequestId.UpdatePosition -> TODO()
         }
@@ -80,11 +141,11 @@ class MockMT4(val wrapper: MT4Wrapper) {
     }
 
     // Harder on MQL4
-    private fun indicatorIDToString(d: Double): String = Indicators.values()[d.toInt()].name
+    private fun indicatorIDToString(d: Double): String = Indicator.values()[d.toInt()].name
 
     private fun reset(arrayPointer: AbstractedArrayPointer<Double>) {
         for (i in 0 until arrayPointer.size) {
-            arrayPointer[i] = DEFAULT_ARRAY_VALUE
+            arrayPointer[i] = DEFAULT_VALUE
         }
     }
 }

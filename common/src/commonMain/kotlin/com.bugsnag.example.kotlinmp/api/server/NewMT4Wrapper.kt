@@ -33,23 +33,21 @@ interface NewMT4Wrapper {
 }
 
 interface NewMT4API {
-    val onNewBar: () -> List<MT4Request<*>>
-    val responseCallback: (Map<MT4Request<*>, Iterable<Double>>) -> MT4Request.PositionAction
-    val actionCallback: (Boolean) -> Unit
+    fun onNewBar(): List<MT4Request<*>>
+    fun responseCallback(map: Map<MT4Request<*>, Iterable<Double>>): MT4Request.PositionAction?
+    fun actionCallback(success: Boolean)
 }
 
 class NewMT4WrapperImpl(
-        private val onNewBar: () -> List<MT4Request<*>>,
-        private val responseCallback: (Map<MT4Request<*>, Iterable<Double>>) -> MT4Request.PositionAction,
-        private val actionCallback: (Boolean) -> Unit
+        private val newMT4API: NewMT4API
 ) : NewMT4Wrapper {
 
-    private val requests: MutableList<MT4Request<*>> = mutableListOf()
+    private var requests: MutableList<MT4Request<*>> = mutableListOf()
     private val responses: MutableMap<MT4Request<*>, Iterable<Double>> = mutableMapOf()
     private var action: MT4Request.PositionAction? = null
 
     override fun onNewBar() {
-        onNewBar.invoke()
+        requests = newMT4API.onNewBar().toMutableList()
     }
 
 
@@ -62,12 +60,15 @@ class NewMT4WrapperImpl(
     }
 
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
+
+//        if (requests.isNotEmpty()) {
         requests.removeAt(0).let { action ->
             responses[action] = arrayPointer
         }
+//    }
 
         if (requests.isEmpty()) {
-            responseCallback(responses)
+            action = newMT4API.responseCallback(responses)
         }
     }
 
@@ -78,7 +79,7 @@ class NewMT4WrapperImpl(
     override fun actionResponse(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
         action
                 ?.buildFromResponse(arrayPointer)
-                ?.let { actionResult -> actionCallback(actionResult) }
+                ?.let { actionResult -> newMT4API.actionCallback(actionResult) }
     }
 }
 
