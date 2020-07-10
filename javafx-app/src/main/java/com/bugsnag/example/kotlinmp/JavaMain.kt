@@ -9,6 +9,7 @@ import com.bugsnag.example.kotlinmp.api.server.NewMT4WrapperImpl
 import com.bugsnag.example.kotlinmp.api.server.action.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
+import java.lang.IllegalArgumentException
 
 
 fun main() {
@@ -17,7 +18,8 @@ fun main() {
         private val indicatorHistory = mutableMapOf<Indicator, MutableList<Double>>()
 
         override fun onNewBar(): List<MT4Request<*>> = listOf(
-                MT4Request.GetIndicatorValue(Indicator.ATR)
+                MT4Request.GetIndicatorValue(Indicator.ATR),
+                MT4Request.GetIndicatorValue(Indicator.MA20)
         )
 
         override fun responseCallback(map: Map<MT4Request<*>, Iterable<Double>>): MT4Request.PositionAction? {
@@ -41,9 +43,11 @@ fun main() {
 
         fun getPosition(indicators: Map<Indicator, List<Double>>): MT4Request.PositionAction? {
 
-            val atrValue = (indicators[Indicator.ATR] ?: error("No ATR value")).first()
+            val atrValue = (indicators[Indicator.ATR] ?: error("No ATR value")).last()
+            val ma20Value = (indicators[Indicator.MA20] ?: error("No MA20 value")).last()
+
             return MT4Request.PositionAction.OpenPosition(
-                    Position(Position.Type.LONG, 123, atrValue, atrValue)
+                    Position(Position.Type.LONG, 123, atrValue, ma20Value)
             )
         }
 
@@ -118,7 +122,6 @@ class MockMT4(val wrapper: NewMT4Wrapper) {
             }
             MT4RequestId.GetIndicatorNumberOfParams -> TODO()
             MT4RequestId.OpenPosition -> {
-                // TODO add open position logic
                 val type = arrayPointer[0]
                 val magicNumber = arrayPointer[1]
                 val volume = arrayPointer[2]
@@ -150,4 +153,8 @@ class MockMT4(val wrapper: NewMT4Wrapper) {
     }
 }
 
-private fun iCustom(indicator: String): Double = 456.0
+private fun iCustom(indicator: String): Double = when (indicator) {
+    Indicator.MA20.name -> 20.0
+    Indicator.ATR.name -> 14.0
+    else -> throw IllegalArgumentException("Nope")
+}

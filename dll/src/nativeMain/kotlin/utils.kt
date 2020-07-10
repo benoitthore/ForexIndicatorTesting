@@ -33,6 +33,7 @@ fun CArrayPointer<DoubleVar>.abstracted(size: Int) =
             override fun set(index: Int, value: Double) {
                 this@abstracted.set(index, value)
             }
+
         }
 
 fun CArrayPointer<IntVar>.abstracted(size: Int) =

@@ -15,4 +15,6 @@ interface AbstractedArrayPointer<T> : Iterable<T> {
         override fun next(): T = get(i++)
 
     }
+
+    fun copy(): Iterable<T> = toList()
 }

@@ -63,7 +63,7 @@ class NewMT4WrapperImpl(
 
 //        if (requests.isNotEmpty()) {
         requests.removeAt(0).let { action ->
-            responses[action] = arrayPointer
+            responses[action] = arrayPointer.copy()
         }
 //    }
 
