@@ -7,5 +7,5 @@ expect fun platformId(): Int
 
 
 fun test(api : MT4API){
-    println(api.getClosePrice())
+//    println(api.getClosePrice())
 }

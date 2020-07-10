@@ -6,7 +6,7 @@ package com.bugsnag.example.kotlinmp
 //class Strategy1(override val mt4: MT4API) : EA {
 //    override fun onStart(): Boolean = true
 //
-//    override fun onTick() {
+//    override fun onNewCandle() {
 //        TODO("Not yet implemented")
 //    }
 //

@@ -19,5 +19,5 @@ fun onStart(action: CPointer<IntVar>, buffer: CArrayPointer<DoubleVar>, bufferSi
 
 @CName(externName = "on_tick", shortName = "on_tick")
 fun onTick(action: CPointer<IntVar>, buffer: CArrayPointer<DoubleVar>, bufferSize: Int) {
-    wrapper.onTick(action.abstracted(), buffer.abstracted(bufferSize))
+    wrapper.onNewCandle(action.abstracted(), buffer.abstracted(bufferSize))
 }

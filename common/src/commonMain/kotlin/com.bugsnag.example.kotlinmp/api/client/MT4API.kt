@@ -1,7 +1,8 @@
 package com.bugsnag.example.kotlinmp.api.client
 
 
-enum class Indicator {
+enum class Indicators {
+    ATR
 
 }
 
@@ -21,38 +22,55 @@ data class Position(
 
 }
 
+enum class Symbol {
+    EURUSD
+}
+
+class OnStartData(val symbol: Symbol)
 
 interface MT4API {
+
+    var onNewCandle: (() -> Unit)?
+        get() = null
+        set(value) {}
+    var onStart: ((OnStartData) -> Unit)?
+        get() = null
+        set(value) {}
+
     /**
      * Indicate to go to the next candle
      */
-    fun close()
+    suspend fun close()
 
     /**
      * Get price for current pair and time frame
      */
-    fun getClosePrice(): Double
+    suspend fun getClosePrice(): Double
 
     /**
      * @param indicator the indicator to call
      * @param index the index for the output value, needs to be less that indicator.outputValues
      */
-    fun getIndicatorValue(indicator: Indicator): Double
+    suspend fun getIndicatorValue(indicator: Indicators): Double
 
     /**
      * Return the number of parameters for a specific indicator
      */
-    fun getIndicatorNumberOfParams(indicator: Indicator): Int
+    suspend fun getIndicatorNumberOfParams(indicator: Indicators): Int
 
     /**
-     * @return true if position has been opened
+     * @return true if the position has been opened
      */
-    fun openPosition(position: Position): Boolean
+    suspend fun openPosition(position: Position): Boolean
 
     /**
-     * @return true if position has been closed
+     * @return true if the position has been updated
      */
-    fun closePosition(position: Position): Boolean
+    suspend fun updatePosition(position: Position): Boolean
 
-    fun moveStopLoss(toValue: Double): Boolean
+    /**
+     * @return true if the position has been closed
+     */
+    suspend fun closePosition(position: Position): Boolean
+
 }
