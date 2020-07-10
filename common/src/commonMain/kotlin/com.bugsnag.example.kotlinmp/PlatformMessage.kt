@@ -4,8 +4,4 @@ import com.bugsnag.example.kotlinmp.api.client.MT4API
 
 expect fun platformMessage(): String
 expect fun platformId(): Int
-
-
-fun test(api : MT4API){
-//    println(api.getClosePrice())
-}
+expect fun <T> myRunBlocking(block: suspend () -> T): T

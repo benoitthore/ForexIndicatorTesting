@@ -1,7 +1,7 @@
 package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.api.client.Indicators
-import com.bugsnag.example.kotlinmp.api.server.action.MT4ActionId
+import com.bugsnag.example.kotlinmp.api.server.action.MT4RequestId
 import com.bugsnag.example.kotlinmp.api.server.MT4Wrapper
 import com.bugsnag.example.kotlinmp.api.server.MT4WrapperImpl
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
@@ -32,7 +32,7 @@ Create a test scenario where an EA asks for indicator value, result should be 45
  */
 class MockMT4(val wrapper: MT4Wrapper) {
     private val DEFAULT_ARRAY_VALUE: Double = 0.0
-    private val DEFAULT_ACTION_VALUE: Int = MT4ActionId.Close.ordinal
+    private val DEFAULT_ACTION_VALUE: Int = MT4RequestId.Close.ordinal
     val actionPointer = DEFAULT_ACTION_VALUE.p
     val arrayPointer = MutableList(10) { DEFAULT_ARRAY_VALUE }.p
 
@@ -57,24 +57,24 @@ class MockMT4(val wrapper: MT4Wrapper) {
             wrapper.onDataReceived(actionPointer, arrayPointer)
 
 
-        } while (actionPointer.value != MT4ActionId.Close.ordinal)
+        } while (actionPointer.value != MT4RequestId.Close.ordinal)
     }
 
     private fun processData(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
-        when (MT4ActionId.values()[actionPointer.value]) {
-            MT4ActionId.Close -> {
+        when (MT4RequestId.values()[actionPointer.value]) {
+            MT4RequestId.Close -> {
                 println("Closing")
             }
-            MT4ActionId.GetClosePrice -> TODO()
-            MT4ActionId.GetIndicatorValue -> {
+            MT4RequestId.GetClosePrice -> TODO()
+            MT4RequestId.GetIndicatorValue -> {
                 val indicator = indicatorIDToString(arrayPointer[0])
                 reset(arrayPointer) //reset (probably not needed)
                 arrayPointer[0] = iCustom(indicator)
             }
-            MT4ActionId.GetIndicatorNumberOfParams -> TODO()
-            MT4ActionId.OpenPosition -> TODO()
-            MT4ActionId.ClosePosition -> TODO()
-            MT4ActionId.UpdatePosition -> TODO()
+            MT4RequestId.GetIndicatorNumberOfParams -> TODO()
+            MT4RequestId.OpenPosition -> TODO()
+            MT4RequestId.ClosePosition -> TODO()
+            MT4RequestId.UpdatePosition -> TODO()
         }
 
     }

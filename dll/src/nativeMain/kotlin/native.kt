@@ -7,6 +7,7 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.DoubleVar
 import kotlinx.cinterop.IntVar
 
+
 @CName(externName = "testFun", shortName = "testFun")
 fun createThing(): Int = platformId()
 
@@ -17,7 +18,7 @@ fun onStart(action: CPointer<IntVar>, buffer: CArrayPointer<DoubleVar>, bufferSi
     wrapper.onStart(action.abstracted(), buffer.abstracted(bufferSize))
 }
 
-@CName(externName = "on_tick", shortName = "on_tick")
-fun onTick(action: CPointer<IntVar>, buffer: CArrayPointer<DoubleVar>, bufferSize: Int) {
-    wrapper.onNewCandle(action.abstracted(), buffer.abstracted(bufferSize))
+@CName(externName = "on_new_candle")
+fun onNewCandle() {
+    wrapper.onNewCandle()
 }
