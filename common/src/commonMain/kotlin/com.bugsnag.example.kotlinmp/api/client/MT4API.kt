@@ -1,14 +1,28 @@
+package com.bugsnag.example.kotlinmp.api.client
 
-val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
 
 enum class Indicator {
 
 }
-enum class PositionType {
-    LONG, SHORT
+
+// Don't use runCatching
+//val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
+
+data class Position(
+        val type: Type,
+        val magicNumber: Number,
+        val volume: Double,
+        val stopLoss: Double,
+        val takeProfit: Double? = null) {
+
+    enum class Type {
+        LONG, SHORT
+    }
+
 }
 
-interface NetworkAbstraction {
+
+interface MT4API {
     /**
      * Indicate to go to the next candle
      */
@@ -23,7 +37,7 @@ interface NetworkAbstraction {
      * @param indicator the indicator to call
      * @param index the index for the output value, needs to be less that indicator.outputValues
      */
-    fun getIndicatorValue(indicator: Indicator, index: Int): Double
+    fun getIndicatorValue(indicator: Indicator): Double
 
     /**
      * Return the number of parameters for a specific indicator
@@ -33,12 +47,12 @@ interface NetworkAbstraction {
     /**
      * @return true if position has been opened
      */
-    fun openPosition(type: PositionType, stopLoss: Double, takeProfit: Double? = null): Boolean
+    fun openPosition(position: Position): Boolean
 
     /**
      * @return true if position has been closed
      */
-    fun closePosition(): Boolean
+    fun closePosition(position: Position): Boolean
 
     fun moveStopLoss(toValue: Double): Boolean
 }
