@@ -1,12 +1,6 @@
 package com.bugsnag.example.kotlinmp
 
-import com.bugsnag.example.kotlinmp.api.client.Indicator
-import com.bugsnag.example.kotlinmp.api.client.Position
-import com.bugsnag.example.kotlinmp.api.server.NewMT4API
-import com.bugsnag.example.kotlinmp.api.server.action.MT4RequestId
-import com.bugsnag.example.kotlinmp.api.server.NewMT4Wrapper
-import com.bugsnag.example.kotlinmp.api.server.NewMT4WrapperImpl
-import com.bugsnag.example.kotlinmp.api.server.action.MT4Request
+import com.bugsnag.example.kotlinmp.api.*
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 import java.lang.IllegalArgumentException
@@ -17,25 +11,21 @@ fun main() {
 
         private val indicatorHistory = mutableMapOf<Indicator, MutableList<Double>>()
 
-        override fun onNewBar(): List<MT4Request<*>> = listOf(
-                MT4Request.GetIndicatorValue(Indicator.ATR),
-                MT4Request.GetIndicatorValue(Indicator.MA20)
+        override fun onNewBar(): List<MT4Request.DataRequest<*>> = listOf(
+                MT4Request.DataRequest.GetIndicatorValue(Indicator.ATR),
+                MT4Request.DataRequest.GetIndicatorValue(Indicator.MA20)
         )
 
-        override fun responseCallback(map: Map<MT4Request<*>, Iterable<Double>>): MT4Request.PositionAction? {
+        override fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): MT4Request.PositionAction? {
             map.forEach { (request, response) ->
                 when (request) {
-                    MT4Request.GetClosePrice -> TODO()
-                    is MT4Request.GetIndicatorValue -> {
+                    is MT4Request.DataRequest.GetIndicatorValue -> {
                         indicatorHistory
                                 .getOrPut(request.indicator) { mutableListOf() }
                                 .add(request.buildFromResponse(response))
                     }
-                    is MT4Request.GetIndicatorNumberOfParams -> TODO()
-                    is MT4Request.PositionAction.OpenPosition -> TODO()
-                    is MT4Request.PositionAction.UpdatePosition -> TODO()
-                    is MT4Request.PositionAction.ClosePosition -> TODO()
-                }
+                    is MT4Request.DataRequest.GetIndicatorNumberOfParams -> TODO()
+                }.hashCode()
             }
 
             return getPosition(indicatorHistory)

@@ -1,6 +1,6 @@
-package com.bugsnag.example.kotlinmp.api.server
+package com.bugsnag.example.kotlinmp.api
 
-import com.bugsnag.example.kotlinmp.api.server.action.MT4Request
+import com.bugsnag.example.kotlinmp.api.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
@@ -33,8 +33,8 @@ interface NewMT4Wrapper {
 }
 
 interface NewMT4API {
-    fun onNewBar(): List<MT4Request<*>>
-    fun responseCallback(map: Map<MT4Request<*>, Iterable<Double>>): MT4Request.PositionAction?
+    fun onNewBar(): List<MT4Request.DataRequest<*>>
+    fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): MT4Request.PositionAction?
     fun actionCallback(success: Boolean)
 }
 
@@ -42,8 +42,8 @@ class NewMT4WrapperImpl(
         private val newMT4API: NewMT4API
 ) : NewMT4Wrapper {
 
-    private var requests: MutableList<MT4Request<*>> = mutableListOf()
-    private val responses: MutableMap<MT4Request<*>, Iterable<Double>> = mutableMapOf()
+    private var requests: MutableList<MT4Request.DataRequest<*>> = mutableListOf()
+    private val responses: MutableMap<MT4Request.DataRequest<*>, Iterable<Double>> = mutableMapOf()
     private var action: MT4Request.PositionAction? = null
 
     override fun onNewBar() {

@@ -1,7 +1,5 @@
-package com.bugsnag.example.kotlinmp.api.server.action
+package com.bugsnag.example.kotlinmp.api
 
-import com.bugsnag.example.kotlinmp.api.client.Indicator
-import com.bugsnag.example.kotlinmp.api.client.Position
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
@@ -24,24 +22,27 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
     var response: T? = null
         private set
 
-    object GetClosePrice : MT4Request<Unit>(MT4RequestId.GetClosePrice) {
-        override fun buildFromResponse(data: Iterable<Double>) = Unit
-    }
+    sealed class DataRequest<T : Any>(actionId: MT4RequestId) : MT4Request<T>(actionId) {
 
-    class GetIndicatorValue(val indicator: Indicator) : MT4Request<Double>(MT4RequestId.GetIndicatorValue) {
-        override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
-            arrayPointer[0] = indicator.ordinal.toDouble()
+        object GetClosePrice : MT4Request<Double>(MT4RequestId.GetClosePrice) {
+            override fun buildFromResponse(data: Iterable<Double>) = data.first()
         }
 
-        override fun buildFromResponse(data: Iterable<Double>) = data.first()
-    }
+        class GetIndicatorValue(val indicator: Indicator) : DataRequest<Double>(MT4RequestId.GetIndicatorValue) {
+            override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
+                arrayPointer[0] = indicator.ordinal.toDouble()
+            }
 
-    class GetIndicatorNumberOfParams(val indicator: Indicator) : MT4Request<Int>(MT4RequestId.GetIndicatorNumberOfParams) {
-        override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
-            arrayPointer[0] = indicator.ordinal.toDouble()
+            override fun buildFromResponse(data: Iterable<Double>) = data.first()
         }
 
-        override fun buildFromResponse(data: Iterable<Double>) = data.first().toInt()
+        class GetIndicatorNumberOfParams(val indicator: Indicator) : DataRequest<Int>(MT4RequestId.GetIndicatorNumberOfParams) {
+            override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
+                arrayPointer[0] = indicator.ordinal.toDouble()
+            }
+
+            override fun buildFromResponse(data: Iterable<Double>) = data.first().toInt()
+        }
     }
 
     sealed class PositionAction(val position: Position, actionId: MT4RequestId) : MT4Request<Boolean>(actionId) {
