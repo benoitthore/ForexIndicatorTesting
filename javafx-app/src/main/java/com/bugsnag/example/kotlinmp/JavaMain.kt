@@ -1,7 +1,6 @@
 package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
-import com.bugsnag.example.kotlinmp.lib.Position
 import com.bugsnag.example.kotlinmp.lib.wrapper.*
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
@@ -9,10 +8,14 @@ import java.lang.IllegalArgumentException
 
 
 fun main() {
-    val wrapper = MT4APIImpl(MT4HandlerImpl())
+    val wrapper = MT4ServiceImpl(MT4HandlerImpl())
     val mockMT4 = MockMT4(wrapper)
 
     mockMT4.onStart()
+    mockMT4.onTick()
+    println()
+    mockMT4.onTick()
+    println()
     mockMT4.onTick()
 }
 
@@ -30,7 +33,7 @@ Add Channel to MT4WrapperImpl
 Create a test scenario where an EA asks for indicator value, result should be 456
 
  */
-class MockMT4(val wrapper: MT4API) {
+class MockMT4(val service: MT4Service) {
     private val DEFAULT_VALUE: Double = -1.0
     val actionPointer = DEFAULT_VALUE.toInt().p
     val arrayPointer = MutableList(10) { DEFAULT_VALUE }.p
@@ -43,54 +46,25 @@ class MockMT4(val wrapper: MT4API) {
     fun onTick() {
         // TODO Return if not new candle
 
-        // Starts the process in the EA
-        wrapper.onNewBar()
-        exchange(DATA_REQUEST)
-        exchange(POSITION_CONTROL)
+        service.onNewBar()
+        exchange()
 
-        // Communication loop between EA and mt4
+        service.goToActionMode()
+        exchange()
+
+    }
+
+    fun exchange() {
         var isRequesting: Boolean
         do {
             //reset (probably not needed)
             reset(arrayPointer)
             actionPointer.value = DEFAULT_VALUE.toInt()
 
-            isRequesting = wrapper.request(actionPointer, arrayPointer)
+            isRequesting = service.request(actionPointer, arrayPointer)
             if (isRequesting) {
                 processData(actionPointer, arrayPointer)
-                wrapper.response(actionPointer, arrayPointer)
-            }
-        } while (isRequesting)
-
-        wrapper.action(actionPointer, arrayPointer)
-        processData(actionPointer, arrayPointer)
-        wrapper.actionResponse(actionPointer, arrayPointer)
-    }
-
-    // TODO Make this work like so
-    /*
-
-    fun onTick() {
-        // TODO Return if not new candle
-        wrapper.onNewBar()
-        exchange(DATA_REQUEST)
-        exchange(POSITION_CONTROL)
-    }
-     */
-    private val DATA_REQUEST = 0
-    private val POSITION_CONTROL = 1
-    fun exchange(mode : Int){
-        var isRequesting: Boolean
-//        wrapper.setMode(mode)
-        do {
-            //reset (probably not needed)
-            reset(arrayPointer)
-            actionPointer.value = DEFAULT_VALUE.toInt()
-
-            isRequesting = wrapper.request(actionPointer, arrayPointer)
-            if (isRequesting) {
-                processData(actionPointer, arrayPointer)
-                wrapper.response(actionPointer, arrayPointer)
+                service.response(actionPointer, arrayPointer)
             }
         } while (isRequesting)
     }
@@ -101,7 +75,7 @@ class MockMT4(val wrapper: MT4API) {
             MT4RequestId.GetClosePrice -> TODO()
             MT4RequestId.GetIndicatorValue -> {
                 val indicator = indicatorIDToString(arrayPointer[0])
-                reset(arrayPointer) //reset (probably not needed)
+                reset(arrayPointer)
                 arrayPointer[0] = iCustom(indicator)
             }
             MT4RequestId.GetIndicatorNumberOfParams -> TODO()
@@ -120,6 +94,8 @@ class MockMT4(val wrapper: MT4API) {
                     takeProfit=$takeProfit
                 """.trimIndent())
 
+                reset(arrayPointer)
+                arrayPointer[0] = 1.0
             }
             MT4RequestId.ClosePosition -> TODO()
             MT4RequestId.UpdatePosition -> TODO()
@@ -138,7 +114,7 @@ class MockMT4(val wrapper: MT4API) {
 }
 
 private fun iCustom(indicator: String): Double = when (indicator) {
-    Indicator.MA20.name -> 20.0
-    Indicator.ATR.name -> 14.0
+    Indicator.MA20.name -> 20.0 + (Math.random() * 10).toInt()
+    Indicator.ATR.name -> 10.0 + (Math.random() * 10).toInt()
     else -> throw IllegalArgumentException("Nope")
 }

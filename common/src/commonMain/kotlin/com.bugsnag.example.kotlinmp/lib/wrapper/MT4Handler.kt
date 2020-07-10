@@ -5,7 +5,7 @@ import com.bugsnag.example.kotlinmp.lib.Position
 
 interface MT4Handler {
     fun onNewBar(): List<MT4Request.DataRequest<*>>
-    fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): MT4Request.PositionAction?
+    fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): List<MT4Request.PositionAction>
     fun actionCallback(success: Boolean)
 }
 
@@ -17,7 +17,7 @@ class MT4HandlerImpl : MT4Handler {
             MT4Request.DataRequest.GetIndicatorValue(Indicator.MA20)
     )
 
-    override fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): MT4Request.PositionAction? {
+    override fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): List<MT4Request.PositionAction> {
         map.forEach { (request, response) ->
             when (request) {
                 is MT4Request.DataRequest.GetIndicatorValue -> {
@@ -32,13 +32,15 @@ class MT4HandlerImpl : MT4Handler {
         return getPosition(indicatorHistory)
     }
 
-    fun getPosition(indicators: Map<Indicator, List<Double>>): MT4Request.PositionAction? {
+    fun getPosition(indicators: Map<Indicator, List<Double>>): List<MT4Request.PositionAction> {
 
         val atrValue = (indicators[Indicator.ATR] ?: error("No ATR value")).last()
         val ma20Value = (indicators[Indicator.MA20] ?: error("No MA20 value")).last()
 
-        return MT4Request.PositionAction.OpenPosition(
-                Position(Position.Type.LONG, 123, atrValue, ma20Value)
+        return listOf(
+                MT4Request.PositionAction.OpenPosition(
+                        Position(Position.Type.LONG, 123, atrValue, ma20Value)
+                )
         )
     }
 
