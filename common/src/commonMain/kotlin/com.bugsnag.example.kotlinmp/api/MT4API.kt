@@ -6,6 +6,9 @@ package com.bugsnag.example.kotlinmp.api.client
 enum class Indicator {
     ATR,MA20
 }
+data class IndicatorValue(
+        val double: Double
+)
 data class Position(
         val type: Type,
         val magicNumber: Number,
