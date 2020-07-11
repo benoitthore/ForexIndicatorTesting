@@ -11,11 +11,17 @@ interface MT4DataGatherer {
 
 typealias ControlPositionCallback = (closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) -> List<MT4Request.PositionAction>
 
-class MT4DataGathererImpl(
-        private val indicators: List<Indicator>,
-        val onDataReceived: ControlPositionCallback
-) : MT4DataGatherer {
-    constructor(vararg indicators: Indicator,onDataReceived: ControlPositionCallback) : this(indicators.toList(),onDataReceived)
+interface EaApi {
+    val indicators: List<Indicator>
+    val onDataReceived: ControlPositionCallback
+}
+
+class EaApiImpl(
+        override val indicators: List<Indicator>,
+        override val onDataReceived: ControlPositionCallback
+) : MT4DataGatherer, EaApi {
+    constructor(vararg indicators: Indicator, onDataReceived: ControlPositionCallback) : this(indicators.toList(), onDataReceived)
+
     private val indicatorHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()
     private val closePrices = mutableListOf<Double>()
 

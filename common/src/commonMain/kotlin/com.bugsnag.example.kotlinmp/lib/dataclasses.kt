@@ -4,7 +4,7 @@ package com.bugsnag.example.kotlinmp.lib
 //val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
 
 enum class Indicator {
-    ATR, MA20
+    ATR, MovingAverage
 }
 
 data class Position(
