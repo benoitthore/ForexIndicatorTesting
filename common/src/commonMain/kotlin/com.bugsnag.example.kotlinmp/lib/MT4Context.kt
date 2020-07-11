@@ -4,11 +4,9 @@ package com.bugsnag.example.kotlinmp.lib
 //val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
 
 enum class Indicator {
-    ATR,MA20
+    ATR, MA20
 }
-data class IndicatorValue(
-        val double: Double
-)
+
 data class Position(
         val type: Type,
         val magicNumber: Number,
@@ -26,4 +24,13 @@ enum class Symbol {
     EURUSD
 }
 
-class OnStartData(val symbol: Symbol)
+
+data class IndicatorData(
+        val value1: Double,
+        val value2: Double,
+        val value3: Double,
+        val value4: Double,
+        val value5: Double,
+        val value6: Double,
+        val value7: Double
+)

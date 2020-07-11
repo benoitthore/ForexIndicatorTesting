@@ -1,6 +1,7 @@
 package com.bugsnag.example.kotlinmp.lib.wrapper
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
+import com.bugsnag.example.kotlinmp.lib.IndicatorData
 import com.bugsnag.example.kotlinmp.lib.Position
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
@@ -26,16 +27,27 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
 
     sealed class DataRequest<T : Any>(actionId: MT4RequestId) : MT4Request<T>(actionId) {
 
-        object GetClosePrice : MT4Request<Double>(MT4RequestId.GetClosePrice) {
-            override fun buildFromResponse(data: Iterable<Double>) = data.first()
+        object GetClosePrice : DataRequest<Double>(MT4RequestId.GetClosePrice) {
+            override fun buildFromResponse(data: Iterable<Double>): Double = data.first()
         }
 
-        class GetIndicatorValue(val indicator: Indicator) : DataRequest<Double>(MT4RequestId.GetIndicatorValue) {
+        class GetIndicatorValue(val indicator: Indicator) : DataRequest<IndicatorData>(MT4RequestId.GetIndicatorValue) {
             override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
                 arrayPointer[0] = indicator.ordinal.toDouble()
             }
 
-            override fun buildFromResponse(data: Iterable<Double>) = data.first()
+            override fun buildFromResponse(data: Iterable<Double>): IndicatorData = data.iterator().let {
+                IndicatorData(
+                        value1 = it.next(),
+                        value2 = it.next(),
+                        value3 = it.next(),
+                        value4 = it.next(),
+                        value5 = it.next(),
+                        value6 = it.next(),
+                        value7 = it.next()
+                )
+            }
+
         }
 
         class GetIndicatorNumberOfParams(val indicator: Indicator) : DataRequest<Int>(MT4RequestId.GetIndicatorNumberOfParams) {

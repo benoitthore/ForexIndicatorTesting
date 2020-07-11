@@ -1,6 +1,8 @@
 package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
+import com.bugsnag.example.kotlinmp.lib.Indicator.*
+import com.bugsnag.example.kotlinmp.lib.Position
 import com.bugsnag.example.kotlinmp.lib.wrapper.*
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
@@ -8,29 +10,28 @@ import java.lang.IllegalArgumentException
 
 
 fun main() {
-    val wrapper = MT4ServiceImpl(MT4HandlerImpl())
+    val wrapper = MT4ServiceImpl(MT4DataGathererImpl(ATR, MA20) { closePrices, indicators ->
+        val atrValue = (indicators[ATR] ?: error("No ATR value")).last()
+        val ma20Value = (indicators[MA20] ?: error("No MA20 value")).last()
+
+        listOf(
+                MT4Request.PositionAction.OpenPosition(
+                        Position(Position.Type.LONG, 123, ma20Value.value1, ma20Value.value7, takeProfit = closePrices.last())
+                )
+        )
+    })
     val mockMT4 = MockMT4(wrapper)
 
     mockMT4.onStart()
     mockMT4.onTick()
-    println()
-    mockMT4.onTick()
-    println()
-    mockMT4.onTick()
+//    println()
+//    mockMT4.onTick()
+//    println()
+//    mockMT4.onTick()
 }
 
-// TODO TEST IF COROUTINES WORK ON MT4
-//
-//      test if coroutines work on mt4
-//
-// TODO TEST IF COROUTINES WORK ON MT4
-
-/* TODO
-
+/**
 This class should be converted to MQL4, we first want to test it
-
-Add Channel to MT4WrapperImpl
-Create a test scenario where an EA asks for indicator value, result should be 456
 
  */
 class MockMT4(val service: MT4Service) {
@@ -72,11 +73,15 @@ class MockMT4(val service: MT4Service) {
 
     private fun processData(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>) {
         when (MT4RequestId.values()[actionPointer.value]) {
-            MT4RequestId.GetClosePrice -> TODO()
+            MT4RequestId.GetClosePrice -> {
+                arrayPointer[0] = 1000.0
+            }
             MT4RequestId.GetIndicatorValue -> {
                 val indicator = indicatorIDToString(arrayPointer[0])
                 reset(arrayPointer)
-                arrayPointer[0] = iCustom(indicator)
+                for (i in 0 until 7) {
+                    arrayPointer[i] = iCustom(indicator, i)
+                }
             }
             MT4RequestId.GetIndicatorNumberOfParams -> TODO()
             MT4RequestId.OpenPosition -> {
@@ -113,8 +118,8 @@ class MockMT4(val service: MT4Service) {
     }
 }
 
-private fun iCustom(indicator: String): Double = when (indicator) {
-    Indicator.MA20.name -> 20.0 + (Math.random() * 10).toInt()
-    Indicator.ATR.name -> 10.0 + (Math.random() * 10).toInt()
+private fun iCustom(indicator: String, index: Int = 0): Double = when (indicator) {
+    MA20.name -> index.toDouble()
+    ATR.name -> Math.random() * 10
     else -> throw IllegalArgumentException("Nope")
 }

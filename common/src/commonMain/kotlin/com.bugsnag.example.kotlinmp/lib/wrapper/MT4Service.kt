@@ -28,7 +28,7 @@ interface MT4Service {
 }
 
 class MT4ServiceImpl(
-        private val handler: MT4Handler
+        private val handler: MT4DataGatherer
 ) : MT4Service {
 
     private val requestExchangeManager = RequestExchangeManager<MT4Request.DataRequest<*>>()
@@ -89,7 +89,7 @@ class RequestExchangeManager<T : MT4Request.DataRequest<*>> : MT4ExchangeManager
 
 }
 
-class ActionExchangeManager(private val handler: MT4Handler) : MT4ExchangeManager<MT4Request.PositionAction>() {
+class ActionExchangeManager(private val handler: MT4DataGatherer) : MT4ExchangeManager<MT4Request.PositionAction>() {
 
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
         if (requests.isNotEmpty()) {
