@@ -39,8 +39,8 @@ string indicatorName(INDICATOR indicator){
     if(StringCompare(indicator,"MA") == 0){
             return "Trend\\Moving Average";
     }
-    Alert("invalide indicator " + indicator)
-    return ""
+    Alert("invalide indicator " + indicator);
+    return NULL;
 }
 
 
@@ -107,22 +107,22 @@ void processData(REQUEST_ID action,double &array[]) {
       array[0] = AccountEquity();
    }
    else if (action == GetIndicatorValue) {
-                int indicator = indicatorIDToString((int)arrayPointer[0])
+                int indicator = indicatorName((INDICATOR)array[0]);
                 // + 1 because iCustom returns the last bar which should be really small
-                int shift = (int) arrayPointer[1] + 1
-                for (i in 0 until 7) {
-                    arrayPointer[i] = iCustom(indicator, i, shift)
+                int shift = (int) array[1] + 1;
+                for (int i = 0 ; i < 7 ; i++) {
+                    array[i] = iCustom(Symbol(),NULL,indicator, i, shift);
                 }
    }
    else if (action == GetIndicatorNumberOfParams){
        //TODO
    }
    else if (action == OpenPosition){
-            ENUM_ORDER_TYPE type = (ENUM_ORDER_TYPE) ((int) arrayPointer[0])
-            int magicNumber = (int) arrayPointer[1]
-            double volume = arrayPointer[2]
-            double stopLoss = arrayPointer[3]
-            double takeProfit = arrayPointer[4]
+            ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE) ((int) array[0]);
+            int magicNumber =  array[1];
+            double volume = array[2];
+            double stopLoss = array[3];
+            double takeProfit = array[4];
 
             double   openPrice;
 
@@ -147,9 +147,9 @@ void processData(REQUEST_ID action,double &array[]) {
 
 
             if(ticket == -1){
-                arrayPointer[0] = 0
+                array[0] = 0;
             } else {
-                arrayPointer[0] = 1
+                array[0] = 1;
             }
    }
    else if (action == UpdatePosition){
