@@ -5,7 +5,6 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4RequestId
 import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Service
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
-import java.lang.IllegalArgumentException
 
 /**
 This class should be converted to MQL4, we first want to test it
