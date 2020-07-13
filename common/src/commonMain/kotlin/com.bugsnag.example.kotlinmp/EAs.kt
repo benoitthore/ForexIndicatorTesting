@@ -21,7 +21,7 @@ fun getPosition(
         val maxLoss = equity * 0.01
         val stopLossPips = atr * 1.5
         val takeProfitPips = atr * 1
-        
+
         when (type) {
             Position.Type.NONE -> null
             Position.Type.LONG, Position.Type.SHORT -> {
@@ -74,7 +74,7 @@ fun getTestEA(): EA {
 
         val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 
-        val ma = indicators[Indicator.MovingAverage] ?: throwException("Moving average needed Needed")
+        val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
 
         val signal = entrySignal(closePrices, ma)
 

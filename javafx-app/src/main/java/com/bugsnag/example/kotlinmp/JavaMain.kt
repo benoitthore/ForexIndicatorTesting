@@ -18,23 +18,26 @@ fun main() {
             setTP = true
     )
 
-//
-//
-//    val ea = EAWrapper({}, ATR, MovingAverage) { //
-//
-//        val atrValue = it.indicatorsHistory[ATR]!!.last()
-//
-//        emptyList()
-//    }
-//
-//    val wrapper = MT4ServiceImpl(ea)
-//
-//    val mockMT4 = MockMT4(wrapper)
-//
-//    mockMT4.onStart()
-//    mockMT4.onTick()
-//    println()
-//    mockMT4.onTick()
-//    println()
-//    mockMT4.onTick()
+
+    val ea = EAWrapper({}, ATR, MA) { //
+
+        val atrValue = it.indicatorsHistory[ATR]!!.last()
+
+        listOf(
+                MT4Request.PositionAction.OpenPosition(
+                        Position(Position.Type.LONG, 12, 12.0, 12.0, 12.0)
+                )
+        )
+    }
+
+    val wrapper = MT4ServiceImpl(ea)
+
+    val mockMT4 = MockMT4(wrapper)
+
+    mockMT4.onStart()
+    mockMT4.onTick()
+    println()
+    mockMT4.onTick()
+    println()
+    mockMT4.onTick()
 }

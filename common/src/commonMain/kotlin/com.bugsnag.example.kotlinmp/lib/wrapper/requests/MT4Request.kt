@@ -75,6 +75,7 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
             }
         }
 
+        // Order succeed if returned value is 1
         override fun buildFromResponse(data: Iterable<Double>) = data.first().toInt() == 1
 
         class OpenPosition(position: Position) : PositionAction(position, MT4RequestId.OpenPosition)

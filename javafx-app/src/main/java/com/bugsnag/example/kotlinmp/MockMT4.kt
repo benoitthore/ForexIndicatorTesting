@@ -80,7 +80,6 @@ class MockMT4(val service: MT4Service) {
                  */
                 val indicator = indicatorIDToString(arrayPointer[0])
                 val shift = arrayPointer[1].toInt()
-                reset(arrayPointer)
                 for (i in 0 until 7) {
                     arrayPointer[i] = iCustom(indicator, i, shift)
                 }
@@ -101,7 +100,6 @@ class MockMT4(val service: MT4Service) {
                     takeProfit=$takeProfit
                 """.trimIndent())
 
-                reset(arrayPointer)
                 arrayPointer[0] = 1.0
             }
             MT4RequestId.ClosePosition -> TODO()
@@ -126,7 +124,7 @@ class MockMT4(val service: MT4Service) {
 
 
 private fun iCustom(indicator: String, index: Int, shift: Int): Double = when (indicator) {
-    Indicator.MovingAverage.name -> index.toDouble()
+    Indicator.MA.name -> index.toDouble()
     Indicator.ATR.name -> Math.random() * 10
     else -> throw IllegalArgumentException("Nope")
 }

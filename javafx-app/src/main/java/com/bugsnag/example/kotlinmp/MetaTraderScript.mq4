@@ -23,6 +23,26 @@ enum REQUEST_ID {
    ClosePosition
 };
 
+enum INDICATOR {
+    ATR,MA
+};
+
+// Position.Type enum values should be in the same order as this
+enum POSITION_TYPE {
+    LONG, SHORT,NONE
+};
+// TODO Generate this code programtically
+string indicatorName(INDICATOR indicator){
+    if(StringCompare(indicator,"ATR") == 0){
+            return "ATR";
+    }
+    if(StringCompare(indicator,"MA") == 0){
+            return "Trend\\Moving Average";
+    }
+    Alert("invalide indicator " + indicator)
+    return ""
+}
+
 
 
 //+------------------------------------------------------------------+
@@ -85,6 +105,60 @@ void processData(REQUEST_ID action,double &array[]) {
    }
    else if(action == GetEquity){
       array[0] = AccountEquity();
+   }
+   else if (action == GetIndicatorValue) {
+                int indicator = indicatorIDToString((int)arrayPointer[0])
+                // + 1 because iCustom returns the last bar which should be really small
+                int shift = (int) arrayPointer[1] + 1
+                for (i in 0 until 7) {
+                    arrayPointer[i] = iCustom(indicator, i, shift)
+                }
+   }
+   else if (action == GetIndicatorNumberOfParams){
+       //TODO
+   }
+   else if (action == OpenPosition){
+            ENUM_ORDER_TYPE type = (ENUM_ORDER_TYPE) ((int) arrayPointer[0])
+            int magicNumber = (int) arrayPointer[1]
+            double volume = arrayPointer[2]
+            double stopLoss = arrayPointer[3]
+            double takeProfit = arrayPointer[4]
+
+            double   openPrice;
+
+            if (orderType == ORDER_TYPE_BUY) {
+                openPrice         =  Ask;
+            } else {
+                openPrice         =  Bid;
+            }
+
+            int   ticket   =  OrderSend(
+                            Symbol(), // symbol
+                            orderType, // operation
+                            volume, // volume
+                            openPrice, // price
+                            5, // slippage
+                            stopLoss, // stop loss
+                            takeProfit, // take profit
+                            NULL, // comment
+                            magicNumber // magic number
+                            // , color    arrow_color=clrNONE  // color
+                            );
+
+
+            if(ticket == -1){
+                arrayPointer[0] = 0
+            } else {
+                arrayPointer[0] = 1
+            }
+   }
+   else if (action == UpdatePosition){
+       //TODO
+
+   }
+   else if (action == ClosePosition){
+       //TODO
+
    }
 }
 

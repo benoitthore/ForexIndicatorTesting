@@ -7,7 +7,7 @@ import com.bugsnag.example.kotlinmp.utils.last
 
 
 enum class Indicator {
-    ATR, MovingAverage;
+    ATR, MA;
 }
 
 sealed class IndicatorBehaviour {

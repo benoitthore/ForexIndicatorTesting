@@ -9,7 +9,9 @@ data class Position(
         val stopLoss: Double,
         val takeProfit: Double? = null) {
     enum class Type {
-        NONE, LONG, SHORT;
+        LONG,
+        SHORT,
+        NONE;
 
         infix fun Double._plus(other: Number): Double = when (this@Type) {
             NONE -> throwException("Can't do this operation on type ${this@Type}")

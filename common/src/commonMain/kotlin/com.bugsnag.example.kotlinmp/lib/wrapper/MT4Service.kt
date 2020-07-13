@@ -4,8 +4,6 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
-
-
 interface MT4Service {
 
     // Notify of new bar to prepare request
@@ -33,7 +31,6 @@ class MT4ServiceImpl(
         requestExchangeManager.requests = handler.onNewBar().toMutableList()
         requestExchangeManager.responses = mutableMapOf()
     }
-
 
     override fun request(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
         return currentManager.request(actionPointer, arrayPointer)
