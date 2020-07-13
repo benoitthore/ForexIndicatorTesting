@@ -11,15 +11,16 @@ enum class Indicator {
 }
 
 sealed class IndicatorBehaviour {
-    var lastSignal: Position.Type = Position.Type.NONE
-    private set
-    operator fun invoke(prices: List<Double>, data: List<IndicatorData>): Position.Type =
+    var lastSignal: Position.Type? = null
+        private set
+
+    operator fun invoke(prices: List<Double>, data: List<IndicatorData>): Position.Type? =
             getSignal(prices, data).apply { lastSignal = this }
 
-    protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type
+    protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type?
 
     class ZeroLineCross(val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
-        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
             val current = data.last().value()
             val prev = data.last(1).value()
             return if (prev >= 0 && current < 0) {
@@ -27,7 +28,7 @@ sealed class IndicatorBehaviour {
             } else if (prev <= 0 && current > 0) {
                 Position.Type.LONG
             } else {
-                Position.Type.NONE
+                null
             }
         }
     }

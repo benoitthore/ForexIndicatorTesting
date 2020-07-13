@@ -23,7 +23,6 @@ fun getPosition(
         val takeProfitPips = atr * 1
 
         when (type) {
-            Position.Type.NONE -> null
             Position.Type.LONG, Position.Type.SHORT -> {
                 Position(
                         type = type,
@@ -76,7 +75,8 @@ fun getTestEA(): EA {
 
         val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
 
-        val signal = entrySignal(closePrices, ma)
+        val signal = entrySignal(closePrices, ma) ?: return@create emptyList()
+
 
         getPosition(
                 currentPrice = closePrices.last(),

@@ -10,17 +10,14 @@ data class Position(
         val takeProfit: Double? = null) {
     enum class Type {
         LONG,
-        SHORT,
-        NONE;
+        SHORT;
 
         infix fun Double._plus(other: Number): Double = when (this@Type) {
-            NONE -> throwException("Can't do this operation on type ${this@Type}")
             LONG -> this + other.toDouble()
             SHORT -> this - other.toDouble()
         }
 
         infix fun Double._minus(other: Number): Double = when (this@Type) {
-            NONE -> throwException("Can't do this operation on type ${this@Type}")
             LONG -> this - other.toDouble()
             SHORT -> this + other.toDouble()
         }
