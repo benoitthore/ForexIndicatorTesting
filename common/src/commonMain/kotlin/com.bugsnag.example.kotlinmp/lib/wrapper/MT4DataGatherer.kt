@@ -7,6 +7,7 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 interface MT4DataGatherer {
     val ea: EA
     val indicators: List<Indicator> get() = ea.indicators
+    fun onStart(startData: StartData)
     fun onNewBar(): List<MT4Request.DataRequest<*>>
     fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): List<MT4Request.PositionAction>
     fun actionCallback(success: Boolean)
@@ -16,15 +17,21 @@ interface MT4DataGatherer {
 class EAWrapper(
         override val ea: EA
 ) : MT4DataGatherer {
-    constructor(vararg indicators: Indicator, onDataReceived: doEAWork) : this(EA.create(indicators.toList(), onDataReceived))
 
     private val indicatorsHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()
     private val closePrices = mutableListOf<Double>()
     private val equity = mutableListOf<Double>()
 
+    constructor(onStart: OnStart, vararg indicators: Indicator, onDataReceived: OnNewBar)
+            : this(EA.create(indicators.toList(), onStart, onDataReceived))
+
+
+    override fun onStart(startData: StartData) {
+        ea.onStart(startData)
+    }
+
     override fun onNewBar(): List<MT4Request.DataRequest<*>> =
             indicators.map { MT4Request.DataRequest.GetIndicatorValue(it) } + MT4Request.DataRequest.GetClosePrice
-
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): List<MT4Request.PositionAction> {

@@ -13,8 +13,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}")
     implementation(project(":common"))
     implementation("com.bugsnag:bugsnag:${Versions.bugsnagJvm}")
-
+// https://mvnrepository.com/artifact/junit/junit
     // https://mvnrepository.com/artifact/org.openjfx/javafx
 //    implementation("org.openjfx:javafx:14")
+
+    //TODO Fix this
+    testImplementation ("junit.junit:4.12")
 
 }

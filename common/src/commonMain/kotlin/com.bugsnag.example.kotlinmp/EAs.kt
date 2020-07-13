@@ -1,17 +1,27 @@
 package com.bugsnag.example.kotlinmp
 
-import com.bugsnag.example.kotlinmp.lib.Indicator
-import com.bugsnag.example.kotlinmp.lib.IndicatorBehaviour
-import com.bugsnag.example.kotlinmp.lib.IndicatorData
-import com.bugsnag.example.kotlinmp.lib.Position
+import com.bugsnag.example.kotlinmp.lib.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.EA
+import com.bugsnag.example.kotlinmp.lib.wrapper.EAData
 import com.bugsnag.example.kotlinmp.utils.throwException
 
 
 @Suppress("UNREACHABLE_CODE")
-fun getPosition(currentPrice: Double, type: Position.Type, magicNumber: Byte, atr: Double, equity: Double, setTP: Boolean): Position? {
+fun getPosition(
+        currentPrice: Double,
+        pipsToPrice: Double,
+        type: Position.Type,
+        magicNumber: Byte,
+        atr: Double,
+        equity: Double,
+        setTP: Boolean): Position? {
+
 
     return with(type) {
+        val maxLoss = equity * 0.01
+        val stopLossPips = atr * 1.5
+        val takeProfitPips = atr * 1
+        
         when (type) {
             Position.Type.NONE -> null
             Position.Type.LONG, Position.Type.SHORT -> {
@@ -19,12 +29,28 @@ fun getPosition(currentPrice: Double, type: Position.Type, magicNumber: Byte, at
                         type = type,
                         magicNumber = magicNumber,
                         volume = 1.0,
-                        stopLoss = currentPrice _minus 50,
-                        takeProfit = currentPrice _plus 50
+                        stopLoss = currentPrice _minus stopLossPips,
+                        takeProfit = if (setTP) currentPrice _plus takeProfitPips else null
                 )
             }
         }
     }
+}
+
+private fun openBuy(values: EAData): Boolean {
+    return false
+}
+
+private fun openSell(values: EAData): Boolean {
+    return false
+}
+
+private fun closeBuy(values: EAData): Boolean {
+    return false
+}
+
+private fun closeSell(values: EAData): Boolean {
+    return false
 }
 
 fun getTestEA(): EA {
@@ -33,15 +59,24 @@ fun getTestEA(): EA {
 
     val entrySignal: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
 
-    return EA.create(listOf(Indicator.ATR)) { (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) ->
+    var pipsToPrice: Double? = null
+    var symbol: Symbol? = null
+    return EA.create(listOf(Indicator.ATR), {
+        pipsToPrice = it.pipsToPrice
+        symbol = it.symbol
+    }) { (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) ->
+
+        val pipsToPrice = pipsToPrice ?: throwException("Price per pip needed")
+        val symbol = symbol ?: throwException("Price per pip needed")
 
         if (closePrices.size < 2) return@create emptyList()
+
 
         val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 
         val ma = indicators[Indicator.MovingAverage] ?: throwException("Moving average needed Needed")
 
-        val signal = entrySignal.getSignal(closePrices, ma)
+        val signal = entrySignal(closePrices, ma)
 
         getPosition(
                 currentPrice = closePrices.last(),
@@ -49,6 +84,7 @@ fun getTestEA(): EA {
                 magicNumber = 2,
                 atr = atr,
                 equity = equity.last(),
+                pipsToPrice = pipsToPrice,
                 setTP = true
         )
 

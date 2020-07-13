@@ -11,7 +11,12 @@ enum class Indicator {
 }
 
 sealed class IndicatorBehaviour {
-    abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type
+    var lastSignal: Position.Type = Position.Type.NONE
+    private set
+    operator fun invoke(prices: List<Double>, data: List<IndicatorData>): Position.Type =
+            getSignal(prices, data).apply { lastSignal = this }
+
+    protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type
 
     class ZeroLineCross(val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
@@ -47,6 +52,16 @@ sealed class IndicatorBehaviour {
 //            } else {
 //                Position.Type.NONE
 //            }
+        }
+    }
+
+    class TwoLineCrossOutsideRange(
+            val value1: IndicatorData.() -> Double,
+            val value2: IndicatorData.() -> Double,
+            val range: ClosedRange<Double>
+    ) : IndicatorBehaviour() {
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
+            TODO()
         }
     }
 
