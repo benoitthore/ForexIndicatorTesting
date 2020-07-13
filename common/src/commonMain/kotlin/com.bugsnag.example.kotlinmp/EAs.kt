@@ -33,7 +33,9 @@ fun getTestEA(): EA {
 
     val entrySignal: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
 
-    return EA.create(listOf(Indicator.ATR)) { equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>> ->
+    return EA.create(listOf(Indicator.ATR)) { (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) ->
+
+        if (closePrices.size < 2) return@create emptyList()
 
         val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 

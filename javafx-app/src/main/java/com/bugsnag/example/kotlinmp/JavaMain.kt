@@ -7,28 +7,17 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 
 
 fun main() {
-    val testEA = EAWrapper(ATR, MovingAverage) { //
+    val ea = EAWrapper(ATR, MovingAverage) { //
 
-        _, closePrices, indicators ->
-
-        val atrValue = (indicators[ATR] ?: error("No ATR value")).last()
-        val ma20Value = (indicators[MovingAverage] ?: error("No MA20 value")).last()
-
-        listOf(
-                MT4Request.PositionAction.OpenPosition(
-                        Position(Position.Type.LONG, 3, ma20Value.value1, ma20Value.value7, takeProfit = closePrices.last())
-                )
-        )
-    }
-    val VPEA = EAWrapper(ATR, MovingAverage) { //
-
-        _, closePrices, indicators ->
+        ( _, closePrices, indicators ) ->
 
         val atrValue = indicators[ATR]!!.last()
 
         emptyList()
     }
-    val wrapper = MT4ServiceImpl(VPEA)
+
+    val wrapper = MT4ServiceImpl(ea)
+
     val mockMT4 = MockMT4(wrapper)
 
     mockMT4.onStart()
@@ -41,8 +30,4 @@ fun main() {
 //    mockMT4.onTick()
 //    println()
 //    mockMT4.onTick()
-}
-
-class VPEA {
-
 }

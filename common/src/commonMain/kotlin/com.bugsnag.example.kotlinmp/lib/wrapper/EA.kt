@@ -4,7 +4,13 @@ import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorData
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 
-typealias doEAWork = (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) -> List<MT4Request.PositionAction>
+typealias doEAWork = (EAData) -> List<MT4Request.PositionAction>
+
+data class EAData(
+        val equity: List<Double>,
+        val closePrices: List<Double>,
+        val indicatorsHistory: Map<Indicator, MutableList<IndicatorData>>
+)
 
 interface EA {
     val indicators: List<Indicator>

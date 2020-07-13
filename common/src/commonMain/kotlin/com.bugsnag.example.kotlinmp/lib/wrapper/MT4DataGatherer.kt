@@ -18,7 +18,7 @@ class EAWrapper(
 ) : MT4DataGatherer {
     constructor(vararg indicators: Indicator, onDataReceived: doEAWork) : this(EA.create(indicators.toList(), onDataReceived))
 
-    private val indicatorHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()
+    private val indicatorsHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()
     private val closePrices = mutableListOf<Double>()
     private val equity = mutableListOf<Double>()
 
@@ -32,7 +32,7 @@ class EAWrapper(
         map.forEach { (request, response) ->
             when (request) {
                 is MT4Request.DataRequest.GetIndicatorValue -> {
-                    indicatorHistory
+                    indicatorsHistory
                             .getOrPut(request.indicator) { mutableListOf() }
                             .add(request.buildFromResponse(response))
                 }
@@ -46,7 +46,9 @@ class EAWrapper(
             }.run { }
         }
 
-        return ea.onDataReceived(equity, closePrices, indicatorHistory)
+        return ea.onDataReceived(EAData(
+                equity = equity, closePrices = closePrices, indicatorsHistory = indicatorsHistory
+        ))
     }
 
 
