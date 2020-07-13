@@ -3,6 +3,7 @@ package com.bugsnag.example.kotlinmp
 import com.bugsnag.example.kotlinmp.lib.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.EA
 import com.bugsnag.example.kotlinmp.lib.wrapper.EAData
+import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.throwException
 
 
@@ -78,7 +79,7 @@ fun getTestEA(): EA {
         val signal = entrySignal(closePrices, ma) ?: return@create emptyList()
 
 
-        getPosition(
+       val position =  getPosition(
                 currentPrice = closePrices.last(),
                 type = signal,
                 magicNumber = 2,
@@ -88,6 +89,9 @@ fun getTestEA(): EA {
                 setTP = true
         )
 
-        emptyList()
+
+        listOfNotNull(position?.toAction())
     }
 }
+
+private fun Position.toAction() = MT4Request.PositionAction.OpenPosition(this)
