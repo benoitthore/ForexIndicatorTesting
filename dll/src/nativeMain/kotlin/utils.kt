@@ -5,25 +5,25 @@ import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 import kotlinx.cinterop.*
 
 
-fun CPointer<DoubleVar>.abstracted() =
+fun CPointer<DoubleVar>.abstractedVarPointer() =
         object : AbstractedPointer<Double> {
             override var value: Double
-                get() = this@abstracted.pointed.value
+                get() = this@abstractedVarPointer.pointed.value
                 set(value) {
-                    this@abstracted.pointed.value = value
+                    this@abstractedVarPointer.pointed.value = value
                 }
         }
 
-fun CPointer<IntVar>.abstracted() =
+fun CPointer<IntVar>.abstractedVarPointer() =
         object : AbstractedPointer<Int> {
             override var value: Int
-                get() = this@abstracted.pointed.value
+                get() = this@abstractedVarPointer.pointed.value
                 set(value) {
-                    this@abstracted.pointed.value = value
+                    this@abstractedVarPointer.pointed.value = value
                 }
         }
 
-fun CArrayPointer<DoubleVar>.abstracted(size: Int) =
+fun CArrayPointer<DoubleVar>.abstractedArrayPointer(size: Int) =
         object : AbstractedArrayPointer<Double> {
             override val size: Int
                 get() = size
@@ -31,12 +31,12 @@ fun CArrayPointer<DoubleVar>.abstracted(size: Int) =
             override fun get(index: Int): Double = get(index)
 
             override fun set(index: Int, value: Double) {
-                this@abstracted.set(index, value)
+                this@abstractedArrayPointer.set(index, value)
             }
 
         }
 
-fun CArrayPointer<IntVar>.abstracted(size: Int) =
+fun CArrayPointer<IntVar>.abstractedArrayPointer(size: Int) =
         object : AbstractedArrayPointer<Int> {
             override val size: Int
                 get() = size
@@ -44,6 +44,6 @@ fun CArrayPointer<IntVar>.abstracted(size: Int) =
             override fun get(index: Int): Int = get(index)
 
             override fun set(index: Int, value: Int) {
-                this@abstracted.set(index, value)
+                this@abstractedArrayPointer.set(index, value)
             }
         }
