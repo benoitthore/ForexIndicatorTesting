@@ -6,30 +6,28 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Service
 import com.bugsnag.example.kotlinmp.platformId
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
-import kotlinx.cinterop.CArrayPointer
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.DoubleVar
-import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.*
 
 var i = 0
 
 
 @CName(externName = "testArray", shortName = "testArray")
 fun testArray(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleVar>, arraySize : Int): Boolean {
-      actionPointer.abstractedVarPointer().value = 42
+      val actionPointer = actionPointer.abstractedVarPointer()
+      actionPointer.value = 42
       val array = arrayPointer.abstractedArrayPointer(arraySize)
+
       for(i in 0 until array.size){
-            array[i] = arrayPointer.abstractedVarPointer().value
+            array[i] = actionPointer.value.toDouble()
       }
+
       return true
 }
-/*
 
 @CName(externName = "testFun", shortName = "testFun")
 fun testFun(): Int = i++
 
-
-@CName(externName = "testFun", shortName = "testFun")
+@CName(externName = "onNewBar", shortName = "onNewBar")
 fun onNewBar() =
         Impl.onNewBar()
 
@@ -50,6 +48,3 @@ fun response(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<Double
 
 private val Impl = Strategy.get(getTestEA())
 
-
-
-*/
