@@ -6,6 +6,16 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Service
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
+
+/*
+GetClosePrice,
+    GetEquity,
+    GetIndicatorValue,
+    GetIndicatorNumberOfParams,
+    OpenPosition,
+    UpdatePosition,
+    ClosePosition;
+ */
 /**
 This class should be converted to MQL4, we first want to test it
 
@@ -59,6 +69,10 @@ class MockMT4(val service: MT4Service) {
         when (MT4RequestId.values()[actionPointer.value]) {
             MT4RequestId.GetClosePrice -> {
                 arrayPointer[0] = 1000.0 + i++
+            }
+            MT4RequestId.GetEquity -> {
+                arrayPointer[0] = 10_000.0
+
             }
             MT4RequestId.GetIndicatorValue -> {
                 /*
