@@ -1,29 +1,33 @@
 package com.bugsnag.example.kotlinmp.lib
 
-// Don't use runCatching
-//val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
-
-enum class Indicator {
-    ATR, MovingAverage
-}
+import com.bugsnag.example.kotlinmp.utils.throwException
 
 data class Position(
         val type: Type,
-        val magicNumber: Number,
+        val magicNumber: Byte, //using bytes so MT4 code can do magicNumber + Some value (to run the EA on multiple TF)
         val volume: Double,
         val stopLoss: Double,
         val takeProfit: Double? = null) {
-
     enum class Type {
-        LONG, SHORT
-    }
+        NONE, LONG, SHORT;
 
+        infix fun Double._plus(other: Number): Double = when (this@Type) {
+            NONE -> throwException("Can't do this operation on type ${this@Type}")
+            LONG -> this + other.toDouble()
+            SHORT -> this - other.toDouble()
+        }
+
+        infix fun Double._minus(other: Number): Double = when (this@Type) {
+            NONE -> throwException("Can't do this operation on type ${this@Type}")
+            LONG -> this - other.toDouble()
+            SHORT -> this + other.toDouble()
+        }
+    }
 }
 
 enum class Symbol {
     EURUSD
 }
-
 
 data class IndicatorData(
         val value1: Double,

@@ -1,7 +1,7 @@
 package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
-import com.bugsnag.example.kotlinmp.lib.wrapper.MT4RequestId
+import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4RequestId
 import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Service
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
@@ -12,6 +12,13 @@ This class should be converted to MQL4, we first want to test it
 
  */
 class MockMT4(val service: MT4Service) {
+
+    /*
+    /!\ BE CAREFUL WHEN IMPLEMENTING THIS /!\
+    when calling iCustom, make sure you return it with shift = 1 because onNewBar will be called AFTER the new bar gets created
+     */
+
+
     private val DEFAULT_VALUE: Double = -1.0
     val actionPointer = DEFAULT_VALUE.toInt().p
     val arrayPointer = MutableList(10) { DEFAULT_VALUE }.p
@@ -55,10 +62,14 @@ class MockMT4(val service: MT4Service) {
                 arrayPointer[0] = 1000.0 + i++
             }
             MT4RequestId.GetIndicatorValue -> {
+                /*
+                when calling iCustom, make sure you return it with shift = 1 because onNewBar will be called AFTER the new bar gets created
+                 */
                 val indicator = indicatorIDToString(arrayPointer[0])
+                val shift = arrayPointer[1].toInt()
                 reset(arrayPointer)
                 for (i in 0 until 7) {
-                    arrayPointer[i] = iCustom(indicator, i)
+                    arrayPointer[i] = iCustom(indicator, i, shift)
                 }
             }
             MT4RequestId.GetIndicatorNumberOfParams -> TODO()
@@ -95,13 +106,13 @@ class MockMT4(val service: MT4Service) {
         }
     }
 
-    private fun log(message : String){
+    private fun log(message: String) {
         println("MOCK MT4: $message")
     }
 }
 
 
-private fun iCustom(indicator: String, index: Int = 0): Double = when (indicator) {
+private fun iCustom(indicator: String, index: Int, shift: Int): Double = when (indicator) {
     Indicator.MovingAverage.name -> index.toDouble()
     Indicator.ATR.name -> Math.random() * 10
     else -> throw IllegalArgumentException("Nope")

@@ -1,17 +1,10 @@
 package com.bugsnag.example.kotlinmp.lib.wrapper
 
+import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
 
-/*
-    onTick {
-        request(action) { response ->
-
-        }
-    }
-    This can easily become a suspend function
- */
 
 interface MT4Service {
 

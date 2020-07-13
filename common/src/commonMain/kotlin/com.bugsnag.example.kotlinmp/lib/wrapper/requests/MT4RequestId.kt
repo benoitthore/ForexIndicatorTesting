@@ -1,7 +1,8 @@
-package com.bugsnag.example.kotlinmp.lib.wrapper
+package com.bugsnag.example.kotlinmp.lib.wrapper.requests
 
 enum class MT4RequestId {
     GetClosePrice,
+    GetEquity,
     GetIndicatorValue,
     GetIndicatorNumberOfParams,
     OpenPosition,

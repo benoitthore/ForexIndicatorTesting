@@ -1,4 +1,4 @@
-package com.bugsnag.example.kotlinmp.lib.wrapper
+package com.bugsnag.example.kotlinmp.lib.wrapper.requests
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorData
@@ -31,9 +31,14 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
             override fun buildFromResponse(data: Iterable<Double>): Double = data.first()
         }
 
-        class GetIndicatorValue(val indicator: Indicator) : DataRequest<IndicatorData>(MT4RequestId.GetIndicatorValue) {
+        object GetEquity : DataRequest<Double>(MT4RequestId.GetEquity) {
+            override fun buildFromResponse(data: Iterable<Double>): Double = data.first()
+        }
+
+        class GetIndicatorValue(val indicator: Indicator, val shift: Int = 0) : DataRequest<IndicatorData>(MT4RequestId.GetIndicatorValue) {
             override fun execute(arrayPointer: AbstractedArrayPointer<Double>) {
                 arrayPointer[0] = indicator.ordinal.toDouble()
+                arrayPointer[1] = shift.toDouble()
             }
 
             override fun buildFromResponse(data: Iterable<Double>): IndicatorData = data.iterator().let {
