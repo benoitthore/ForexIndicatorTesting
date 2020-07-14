@@ -26,14 +26,12 @@ fun testFun(): Int = i++
 
 @CName(externName = "onNewBar", shortName = "onNewBar")
 fun onNewBar() {
-    log("onNewBar()")
     Impl.onNewBar()
 
 }
 
 @CName(externName = "goToActionMode", shortName = "goToActionMode")
 fun goToActionMode() {
-    log("goToActionMode")
     Impl.goToActionMode()
 }
 

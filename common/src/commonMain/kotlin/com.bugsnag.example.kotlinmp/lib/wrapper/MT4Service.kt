@@ -1,5 +1,6 @@
 package com.bugsnag.example.kotlinmp.lib.wrapper
 
+import com.bugsnag.example.kotlinmp.lib.Symbol
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.log
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
@@ -7,7 +8,7 @@ import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
 interface MT4Service {
 
-    fun onStart()
+    fun onStart(symbol: Int, pipPrice: Double)
 
     // Notify of new bar to prepare request
     fun onNewBar()
@@ -29,8 +30,8 @@ class MT4ServiceImpl(
     private val actionExchangeManager = ActionExchangeManager(handler)
     private var currentManager: MT4ExchangeManager<*> = requestExchangeManager
 
-    override fun onStart() {
-        // TODO Carry on here
+    override fun onStart(symbol: Int, pipPrice: Double) {
+        handler.onStart(StartData(Symbol.values()[symbol], pipPrice))
     }
 
     override fun onNewBar() {
@@ -48,11 +49,8 @@ class MT4ServiceImpl(
     }
 
     override fun goToActionMode() {
-        log("BEFORE responseCallback")
         val responseCallback = handler.responseCallback(requestExchangeManager.responses)
-        log("AFTER responseCallback")
         actionExchangeManager.requests = responseCallback.toMutableList()
-        log("AFTER toMutableList")
 
         currentManager = actionExchangeManager
     }

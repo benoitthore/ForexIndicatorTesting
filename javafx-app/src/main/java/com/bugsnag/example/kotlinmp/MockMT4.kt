@@ -1,6 +1,7 @@
 package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
+import com.bugsnag.example.kotlinmp.lib.Symbol
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4RequestId
 import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Service
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
@@ -34,7 +35,7 @@ class MockMT4(val service: MT4Service) {
 
     fun onStart() {
         // TODO
-//        wrapper.onStart(actionPointer, arrayPointer)
+        service.onStart(Symbol.EURUSD.ordinal,1.0)
     }
 
     fun onTick() {
@@ -117,9 +118,7 @@ class MockMT4(val service: MT4Service) {
         }
     }
 
-    private fun log(message: String) {
-        println("MOCK MT4: $message")
-    }
+
 }
 
 
