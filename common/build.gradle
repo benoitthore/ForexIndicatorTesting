@@ -8,7 +8,7 @@ repositories {
 kotlin {
     targets {
         jvm()
-        mingwX86()
+        mingwX64()
     }
 
     sourceSets {
@@ -17,7 +17,7 @@ kotlin {
                 implementation kotlin('stdlib-common')
             }
         }
-        mingwX86Main {
+        mingwX64Main {
             dependencies {
                 implementation kotlin('stdlib-common')
             }

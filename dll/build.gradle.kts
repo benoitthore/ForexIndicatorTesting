@@ -21,7 +21,7 @@ kotlin {
 //            }
 //        }
 //    }
-    mingwX86("native") {
+    mingwX64("native") {
         val main by compilations.getting
 
         binaries {

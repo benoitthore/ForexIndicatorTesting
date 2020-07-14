@@ -8,12 +8,14 @@
 #property version   "1.00"
 #property strict
 
-#include <Orchard\Common\CommonFunctions.mqh>
+#include <CommonFunctions.mqh>
 #include <kotlin.mqh>
 
 input string               InpTradeComment         =  "VPEA";  // Trade comment
+input int InpMagicNumber = 0;
 
-enum REQUEST_ID {
+enum REQUEST_ID
+  {
    GetClosePrice,
    GetEquity,
    GetIndicatorValue,
@@ -21,54 +23,91 @@ enum REQUEST_ID {
    OpenPosition,
    UpdatePosition,
    ClosePosition
-};
+  };
 
-enum INDICATOR {
-    ATR,MA
-};
+enum INDICATOR
+  {
+   ATR,MA
+  };
 
-// Position.Type enum values should be in the same order as this
-enum POSITION_TYPE {
-    LONG, SHORT,NONE
-};
+
 // TODO Generate this code programtically
-string indicatorName(INDICATOR indicator){
-    if(StringCompare(indicator,"ATR") == 0){
-            return "ATR";
-    }
-    if(StringCompare(indicator,"MA") == 0){
-            return "Trend\\Moving Average";
-    }
-    Alert("invalide indicator " + indicator);
-    return NULL;
-}
+string indicatorName(INDICATOR indicator)
+  {
+   if(StringCompare(indicator,"ATR") == 0)
+     {
+      return "ATR";
+     }
+   if(StringCompare(indicator,"MA") == 0)
+     {
+      return "Trend\\Moving Average";
+     }
+   Alert("invalide indicator " + indicator);
+   return NULL;
+  }
 
+//
+// Use CTrade, easier than doing our own coding
+//
+#include <Trade\Trade.mqh>
+CTrade   *Trade;
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+int OnInit()
+  {
+   testDll();
+//
+// Create a pointer to a ctrade object
+//
+   Trade =  new CTrade();
+   Trade.SetExpertMagicNumber(InpMagicNumber);
+
+   Print("log");
+   return INIT_SUCCEEDED;
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+  {
+   Print("OnDeinit2");
+//
+// Clean up the trade object
+//
+   delete   Trade;
+
+  }
 
 
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
-void OnTick() {
-
-   if (!IsTesting() && !TradeAllowed())  return;        // Try again next time
-   if (!IsNewBar()) return;        // This EA only runs at the start of each bar
-
-   doTick();
-}
+void OnTick()
+  {
+   Print("OnTick");
+   if(!TradeAllowed())
+      return;        // Try again next time
+   if(!IsNewBar())
+      return;        // This EA only runs at the start of each bar
+   Print("doTick");
+// doTick();
+  }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void doTick() {
-   if(!IsNewBar()) return;
-   if(!TradeAllowed()) return;
+void doTick()
+  {
 
    onNewBar();
    exchange();
    goToActionMode();
    exchange();
 
-}
+  }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -78,109 +117,152 @@ const double DEFAULT_VALUE = -1.0;
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void exchange() {
+void exchange()
+  {
    bool isRequesting = false;
 
    int actionPointer;
 
    double arrayPointer[10];
 
-   do {
+   do
+     {
       //reset (probably not needed)
       reset(arrayPointer);
       actionPointer = (double) DEFAULT_VALUE;
       isRequesting = request(actionPointer, arrayPointer,ArraySize(arrayPointer));
-      if (isRequesting) {
+      Print("BEBEUZ:" + isRequesting);
+      if(isRequesting)
+        {
          processData((REQUEST_ID) actionPointer, arrayPointer);
          response(actionPointer, arrayPointer,ArraySize(arrayPointer));
-      }
-   } while (isRequesting);
+        }
+     }
+   while(isRequesting);
 
 
-}
-
-void processData(REQUEST_ID action,double &array[]) {
-   if(action == GetClosePrice){
-      array[0] = Close[1];
-   }
-   else if(action == GetEquity){
-      array[0] = AccountEquity();
-   }
-   else if (action == GetIndicatorValue) {
-                int indicator = indicatorName((INDICATOR)array[0]);
-                // + 1 because iCustom returns the last bar which should be really small
-                int shift = (int) array[1] + 1;
-                for (int i = 0 ; i < 7 ; i++) {
-                    array[i] = iCustom(Symbol(),NULL,indicator, i, shift);
-                }
-   }
-   else if (action == GetIndicatorNumberOfParams){
-       //TODO
-   }
-   else if (action == OpenPosition){
-            ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE) ((int) array[0]);
-            int magicNumber =  array[1];
-            double volume = array[2];
-            double stopLoss = array[3];
-            double takeProfit = array[4];
-
-            double   openPrice;
-
-            if (orderType == ORDER_TYPE_BUY) {
-                openPrice         =  Ask;
-            } else {
-                openPrice         =  Bid;
-            }
-
-            int   ticket   =  OrderSend(
-                            Symbol(), // symbol
-                            orderType, // operation
-                            volume, // volume
-                            openPrice, // price
-                            5, // slippage
-                            stopLoss, // stop loss
-                            takeProfit, // take profit
-                            NULL, // comment
-                            magicNumber // magic number
-                            // , color    arrow_color=clrNONE  // color
-                            );
-
-
-            if(ticket == -1){
-                array[0] = 0;
-            } else {
-                array[0] = 1;
-            }
-   }
-   else if (action == UpdatePosition){
-       //TODO
-
-   }
-   else if (action == ClosePosition){
-       //TODO
-
-   }
-}
+  }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void reset(double &array[]) {
-   for(int i = 0 ; i < ArraySize(array); i++) {
+void processData(REQUEST_ID action,double &array[])
+  {
+
+   if(action == GetClosePrice)
+     {
+      MqlRates BarData[1];
+      CopyRates(Symbol(), Period(), 1, 2, BarData); //Gets the price of the previous candle (originally was 0, 1 is 1, 2)
+      array[0] = BarData[0].close;
+     }
+   else
+      if(action == GetEquity)
+        {
+         array[0] = AccountInfoDouble(ACCOUNT_EQUITY);
+        }
+      else
+         if(action == GetIndicatorValue)
+           {
+            int indicator = indicatorName((INDICATOR)array[0]);
+            // + 1 because iCustom returns the last bar which should be really small
+            int shift = (int) array[1] + 1;
+            for(int i = 0 ; i < 7 ; i++)
+              {
+               array[i] = iCustom(Symbol(),NULL,indicator, i, shift);
+              }
+           }
+         else
+            if(action == GetIndicatorNumberOfParams)
+              {
+               //TODO
+              }
+            else
+               if(action == OpenPosition)
+                 {
+                  MqlTick Latest_Price; // Structure to get the latest prices
+                  SymbolInfoTick(Symbol(),Latest_Price);  // Assign current prices to structure
+
+                  double Bid = Latest_Price.bid;
+                  double Ask = Latest_Price.ask;
+
+                  ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)((int) array[0]);
+                  int magicNumber =  array[1];
+                  double volume = array[2];
+                  double stopLoss = array[3];
+                  double takeProfit = array[4];
+
+                  double   openPrice;
+
+                  if(orderType == ORDER_TYPE_BUY)
+                    {
+                     openPrice         =  Ask;
+                    }
+                  else
+                    {
+                     openPrice         =  Bid;
+                    }
+
+                  int   ticket   =  Trade.PositionOpen(
+                                       Symbol(), // symbol
+                                       orderType, // operation
+                                       volume, // volume
+                                       openPrice, // price
+                                       stopLoss, // stop loss
+                                       takeProfit, // take profit
+                                       NULL // comment
+
+                                    );
+
+
+                  if(ticket == -1)
+                    {
+                     array[0] = 0;
+                    }
+                  else
+                    {
+                     array[0] = 1;
+                    }
+                 }
+               else
+                  if(action == UpdatePosition)
+                    {
+                     //TODO
+
+                    }
+                  else
+                     if(action == ClosePosition)
+                       {
+                        //TODO
+
+                       }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void reset(double &array[])
+  {
+   for(int i = 0 ; i < ArraySize(array); i++)
+     {
       array[i] = DEFAULT_VALUE;
-   }
-}
+     }
+  }
 
 
 
-bool  IsNewBar() {
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool  IsNewBar()
+  {
 
-   static datetime   currentTime =  0;                                        // Will retain last value between calls
-   bool  result   =  (currentTime!=Time[0]);                                  // returns true at each new bar
-   if (result)       currentTime =  Time[0];                                  // Update current at a new bar
+   static datetime priorTime   =  0;
+   datetime          currentTime =  iTime(Symbol(), Period(), 0);
+   bool              result      = (currentTime!=priorTime);
+   priorTime                     =  currentTime;
    return(result);
 
-}
+  }
 /*
 void  OpenTrade(ENUM_ORDER_TYPE  orderType) {
 
