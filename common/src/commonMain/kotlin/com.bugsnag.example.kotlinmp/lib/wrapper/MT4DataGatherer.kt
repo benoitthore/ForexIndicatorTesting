@@ -3,6 +3,7 @@ package com.bugsnag.example.kotlinmp.lib.wrapper
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorData
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
+import com.bugsnag.example.kotlinmp.log
 
 interface MT4DataGatherer {
     val ea: EA
@@ -43,7 +44,10 @@ class EAWrapper(
                             .getOrPut(request.indicator) { mutableListOf() }
                             .add(request.buildFromResponse(response))
                 }
-                is MT4Request.DataRequest.GetIndicatorNumberOfParams -> TODO()
+                is MT4Request.DataRequest.GetIndicatorNumberOfParams -> {
+                    log("CRASH - GetIndicatorNumberOfParams not implemented")
+                    TODO()
+                }
                 is MT4Request.DataRequest.GetClosePrice -> {
                     closePrices += request.buildFromResponse(response)
                 }
@@ -60,6 +64,6 @@ class EAWrapper(
 
 
     override fun actionCallback(success: Boolean) {
-        println("actionCallback($success)")
+        log("actionCallback($success)")
     }
 }

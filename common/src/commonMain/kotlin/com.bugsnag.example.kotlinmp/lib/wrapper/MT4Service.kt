@@ -1,10 +1,13 @@
 package com.bugsnag.example.kotlinmp.lib.wrapper
 
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
+import com.bugsnag.example.kotlinmp.log
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
 interface MT4Service {
+
+    fun onStart()
 
     // Notify of new bar to prepare request
     fun onNewBar()
@@ -26,6 +29,10 @@ class MT4ServiceImpl(
     private val actionExchangeManager = ActionExchangeManager(handler)
     private var currentManager: MT4ExchangeManager<*> = requestExchangeManager
 
+    override fun onStart() {
+        // TODO Carry on here
+    }
+
     override fun onNewBar() {
         currentManager = requestExchangeManager
         requestExchangeManager.requests = handler.onNewBar().toMutableList()
@@ -41,7 +48,12 @@ class MT4ServiceImpl(
     }
 
     override fun goToActionMode() {
-        actionExchangeManager.requests = handler.responseCallback(requestExchangeManager.responses).toMutableList()
+        log("BEFORE responseCallback")
+        val responseCallback = handler.responseCallback(requestExchangeManager.responses)
+        log("AFTER responseCallback")
+        actionExchangeManager.requests = responseCallback.toMutableList()
+        log("AFTER toMutableList")
+
         currentManager = actionExchangeManager
     }
 
@@ -70,7 +82,8 @@ class RequestExchangeManager<T : MT4Request.DataRequest<*>> : MT4ExchangeManager
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
         if (requests.isNotEmpty()) {
             requests.removeAt(0).let { action ->
-                responses[action] = arrayPointer.copy()
+                val copy = arrayPointer.copy()
+                responses[action] = copy
             }
         }
 
@@ -82,13 +95,16 @@ class RequestExchangeManager<T : MT4Request.DataRequest<*>> : MT4ExchangeManager
 class ActionExchangeManager(private val handler: MT4DataGatherer) : MT4ExchangeManager<MT4Request.PositionAction>() {
 
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
+
         if (requests.isNotEmpty()) {
             requests.removeAt(0).let { action ->
+
                 handler.actionCallback(
                         action.buildFromResponse(arrayPointer)
                 )
             }
         }
+
 
         return requests.isNotEmpty()
     }

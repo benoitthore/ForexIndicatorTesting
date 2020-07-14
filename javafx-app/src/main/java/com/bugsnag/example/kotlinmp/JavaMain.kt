@@ -10,7 +10,7 @@ fun main() {
 
     getPosition(
             currentPrice = 0.0,
-            pipsToPrice = 0.0,
+            pipSize = 0.0,
             type = Position.Type.LONG,
             magicNumber = 123,
             atr = 10.0,

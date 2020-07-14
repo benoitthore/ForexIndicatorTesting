@@ -28,7 +28,11 @@ fun CArrayPointer<DoubleVar>.abstractedArrayPointer(size: Int) =
             override val size: Int
                 get() = size
 
-            override fun get(index: Int): Double = get(index)
+            // Old code
+            // override fun get(index: Int): Double = get(index)
+
+            // fix
+            override fun get(index: Int): Double = this@abstractedArrayPointer.get(index)
 
             override fun set(index: Int, value: Double) {
                 this@abstractedArrayPointer.set(index, value)

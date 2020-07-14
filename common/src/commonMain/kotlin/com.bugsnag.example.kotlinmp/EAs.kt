@@ -10,7 +10,7 @@ import com.bugsnag.example.kotlinmp.utils.throwException
 @Suppress("UNREACHABLE_CODE")
 fun getPosition(
         currentPrice: Double,
-        pipsToPrice: Double,
+        pipSize: Double,
         type: Position.Type,
         magicNumber: Byte,
         atr: Double,
@@ -59,38 +59,49 @@ fun getTestEA(): EA {
 
     val entrySignal: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
 
-    var pipsToPrice: Double? = null
+    var pipSize: Double? = null
     var symbol: Symbol? = null
+    var onStartCalled = false
     return EA.create(listOf(Indicator.ATR), {
-        pipsToPrice = it.pipsToPrice
+        if (onStartCalled) {
+            throwException("On start has already been called")
+        }
+        pipSize = it.pipSize
         symbol = it.symbol
+        onStartCalled = true
     }) { (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) ->
 
-        val pipsToPrice = pipsToPrice ?: throwException("Price per pip needed")
-        val symbol = symbol ?: throwException("Price per pip needed")
+        log("<INSIDE-EA>")
+        if (!onStartCalled) {
+            throwException("On start hasn't been called")
+        }
+        val pipSize = pipSize ?: throwException("pipSize needed")
+        val symbol = symbol ?: throwException("symbol needed")
 
         if (closePrices.size < 2) return@create emptyList()
 
 
         val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 
-        val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
+//        val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
+//
+//        val signal = entrySignal(closePrices, ma) ?: return@create emptyList()
 
-        val signal = entrySignal(closePrices, ma) ?: return@create emptyList()
 
-
-       val position =  getPosition(
+        val position = getPosition(
                 currentPrice = closePrices.last(),
-                type = signal,
+                type = Position.Type.LONG,
                 magicNumber = 2,
                 atr = atr,
                 equity = equity.last(),
-                pipsToPrice = pipsToPrice,
+                pipSize = pipSize,
                 setTP = true
         )
 
 
-        listOfNotNull(position?.toAction())
+        listOfNotNull(position?.toAction()).apply {
+            log("</INSIDE-EA>")
+        }
     }
 }
 

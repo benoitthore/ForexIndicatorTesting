@@ -14,7 +14,7 @@ data class EAData(
         val indicatorsHistory: Map<Indicator, MutableList<IndicatorData>>
 )
 
-data class StartData(val symbol: Symbol, val pipsToPrice: Double)
+data class StartData(val symbol: Symbol, val pipSize: Double)
 
 interface EA {
     val indicators: List<Indicator>
