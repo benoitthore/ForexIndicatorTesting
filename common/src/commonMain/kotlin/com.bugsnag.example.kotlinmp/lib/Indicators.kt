@@ -15,13 +15,12 @@ sealed class IndicatorBehaviour {
         private set
 
     operator fun invoke(prices: List<Double>, data: List<IndicatorData>): Position.Type? =
-            getSignal(prices, data).apply { lastSignal = this }
+            getSignal(prices, data).also { if (it != null) lastSignal = it }
 
     protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type?
 
-    // TODO Replace hardcoded 0 by a val
-
     class ZeroLineCross(value: IndicatorData.() -> Double) : LineCross(0.0, value)
+
     open class LineCross(val valueToCross: Double, val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
             val current = data.last().value()
@@ -37,16 +36,16 @@ sealed class IndicatorBehaviour {
     }
 
     class TwoLineCross(
-            val value1: IndicatorData.() -> Double,
-            val value2: IndicatorData.() -> Double
+            val longLine: IndicatorData.() -> Double,
+            val shortLine: IndicatorData.() -> Double
 
     ) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
-            val current1 = data.last().value1()
-            val prev1 = data.last(1).value1()
+            val current1 = data.last().longLine()
+            val prev1 = data.last(1).longLine()
 
-            val current2 = data.last().value2()
-            val prev2 = data.last(1).value2()
+            val current2 = data.last().shortLine()
+            val prev2 = data.last(1).shortLine()
 
             TODO()
 //            return if (prev >= 0 && current < 0) {
@@ -62,6 +61,15 @@ sealed class IndicatorBehaviour {
     class TwoLineCrossOutsideRange(
             val value1: IndicatorData.() -> Double,
             val value2: IndicatorData.() -> Double,
+            val range: ClosedRange<Double>
+    ) : IndicatorBehaviour() {
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
+            TODO()
+        }
+    }
+
+    class OutsideRange(
+            val value1: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
     ) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {

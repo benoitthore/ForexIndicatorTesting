@@ -34,10 +34,10 @@ class ExampleUnitTest {
         }
 
 
-        add(10,20).shouldBeEmpty()
+        add(10,20).shouldBeEmpty() // not enough data
         add(30,20).first().type shouldEqual Position.Type.LONG
         add(10,20).first().type shouldEqual Position.Type.SHORT
-
+        add(10,20).shouldBeEmpty() // don't give signal twice
 
     }
 }
