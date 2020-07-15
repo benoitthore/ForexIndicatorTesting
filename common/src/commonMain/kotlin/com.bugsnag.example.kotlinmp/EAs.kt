@@ -3,6 +3,7 @@ package com.bugsnag.example.kotlinmp
 import com.bugsnag.example.kotlinmp.lib.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.EA
 import com.bugsnag.example.kotlinmp.lib.wrapper.EAData
+import com.bugsnag.example.kotlinmp.lib.wrapper.StartData
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.throwException
 
@@ -58,13 +59,11 @@ fun getTestEA(): EA {
     var openPosition: Position? = null
 
     val entryIndicator: IndicatorBehaviour = IndicatorBehaviour.OnChartAboveOrBelowPrice { value1 }
-    val secondEntryIndicator: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
-    val volumeIndicator: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
-    val exitIndicator: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
 
     var pipSize: Double? = null
     var symbol: Symbol? = null
     var onStartCalled = false
+
     return EA.create(listOf(Indicator.ATR), {
         if (onStartCalled) {
             throwException("On start has already been called")
@@ -74,37 +73,39 @@ fun getTestEA(): EA {
         onStartCalled = true
     }) { (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) ->
 
-        log("<INSIDE-EA>")
-        if (!onStartCalled) {
-            throwException("On start hasn't been called")
-        }
-        val pipSize = pipSize ?: throwException("pipSize needed")
-        val symbol = symbol ?: throwException("symbol needed")
-        val equity = equity.lastOrNull() ?: throwException("symbol needed")
-        val closePrice = closePrices.lastOrNull() ?: throwException("symbol needed")
+//        log("<EA>")
+        run {
+            if (!onStartCalled) {
+                throwException("On start hasn't been called")
+            }
+            val pipSize = pipSize ?: throwException("pipSize needed")
+            val symbol = symbol ?: throwException("symbol needed")
+            val equity = equity.lastOrNull() ?: throwException("equity needed")
+            val closePrice = closePrices.lastOrNull() ?: throwException("closePrice needed")
 
-        if (closePrices.size < 2) return@create emptyList()
-
-
-        val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
-
-        val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
-
-        val entrySignal = entryIndicator(closePrices, ma) ?: return@create emptyList()
-
-        val position = getPosition(
-                currentPrice = closePrice,
-                type = entrySignal,
-                magicNumber = 2,
-                atr = atr,
-                equity = equity,
-                pipSize = pipSize,
-                setTP = true
-        )
+            if (closePrices.size < 2) return@run emptyList<MT4Request.PositionAction>()
 
 
-        listOfNotNull(position?.toAction()).apply {
-            log("</INSIDE-EA>")
+            val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
+
+            val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
+
+            val entrySignal = entryIndicator(closePrices, ma) ?: return@create emptyList()
+
+            val position = getPosition(
+                    currentPrice = closePrice,
+                    type = entrySignal,
+                    magicNumber = 2,
+                    atr = atr,
+                    equity = equity,
+                    pipSize = pipSize,
+                    setTP = true
+            )
+
+
+            listOfNotNull(position?.toAction())
+        }.also {
+//            log("</EA>")
         }
     }
 }

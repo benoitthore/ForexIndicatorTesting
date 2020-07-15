@@ -31,11 +31,11 @@ enum class Symbol {
 }
 
 data class IndicatorData(
-        val value1: Double,
-        val value2: Double,
-        val value3: Double,
-        val value4: Double,
-        val value5: Double,
-        val value6: Double,
-        val value7: Double
+        val value1: Double = 0.0,
+        val value2: Double = 0.0,
+        val value3: Double = 0.0,
+        val value4: Double = 0.0,
+        val value5: Double = 0.0,
+        val value6: Double = 0.0,
+        val value7: Double = 0.0
 )

@@ -5,7 +5,7 @@ plugins {
 }
 
 //application {
-//    mainClassName = "com.bugsnag.example.kotlinmp.Main"
+//    mainClassName = "com.bugsnag.example.kotlinmp.Main"[
 //}
 
 dependencies {
@@ -17,7 +17,13 @@ dependencies {
     // https://mvnrepository.com/artifact/org.openjfx/javafx
 //    implementation("org.openjfx:javafx:14")
 
-    //TODO Fix this
-    testImplementation ("junit.junit:4.12")
+
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+
+    // https://mvnrepository.com/artifact/io.ktor/ktor-server-core
+
 
 }
+
