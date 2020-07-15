@@ -69,13 +69,19 @@ sealed class IndicatorBehaviour {
         }
     }
 
-    class OnChartAboveOrBelowPrice(val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
+    class OnChartAboveOrBelowPrice(val indicatorAboveMeansLong: Boolean = true, val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
-            if (data.last().value() > prices.last()) {
-                return Position.Type.LONG
+            val positionType = if (prices.last() > data.last().value()) {
+                Position.Type.LONG
             } else {
-                return Position.Type.SHORT
+                Position.Type.SHORT
             }
+
+            if (indicatorAboveMeansLong) {
+                return positionType.reversed
+            }
+            return positionType
+
         }
     }
 }

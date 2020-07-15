@@ -12,6 +12,8 @@ data class Position(
         LONG,
         SHORT;
 
+        inline val reversed get() = if (this == LONG) SHORT else LONG
+
         infix fun Double._plus(other: Number): Double = when (this@Type) {
             LONG -> this + other.toDouble()
             SHORT -> this - other.toDouble()
