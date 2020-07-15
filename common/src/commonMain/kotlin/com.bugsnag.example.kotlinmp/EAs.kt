@@ -57,7 +57,10 @@ fun getTestEA(): EA {
 
     var openPosition: Position? = null
 
-    val entrySignal: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
+    val entryIndicator: IndicatorBehaviour = IndicatorBehaviour.OnChartAboveOrBelowPrice { value1 }
+    val secondEntryIndicator: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
+    val volumeIndicator: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
+    val exitIndicator: IndicatorBehaviour = IndicatorBehaviour.ZeroLineCross { value1 }
 
     var pipSize: Double? = null
     var symbol: Symbol? = null
@@ -77,23 +80,24 @@ fun getTestEA(): EA {
         }
         val pipSize = pipSize ?: throwException("pipSize needed")
         val symbol = symbol ?: throwException("symbol needed")
+        val equity = equity.lastOrNull() ?: throwException("symbol needed")
+        val closePrice = closePrices.lastOrNull() ?: throwException("symbol needed")
 
         if (closePrices.size < 2) return@create emptyList()
 
 
         val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 
-//        val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
-//
-//        val signal = entrySignal(closePrices, ma) ?: return@create emptyList()
+        val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
 
+        val entrySignal = entryIndicator(closePrices, ma) ?: return@create emptyList()
 
         val position = getPosition(
-                currentPrice = closePrices.last(),
-                type = Position.Type.LONG,
+                currentPrice = closePrice,
+                type = entrySignal,
                 magicNumber = 2,
                 atr = atr,
-                equity = equity.last(),
+                equity = equity,
                 pipSize = pipSize,
                 setTP = true
         )

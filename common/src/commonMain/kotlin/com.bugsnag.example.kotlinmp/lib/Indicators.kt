@@ -19,13 +19,16 @@ sealed class IndicatorBehaviour {
 
     protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type?
 
-    class ZeroLineCross(val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
+    // TODO Replace hardcoded 0 by a val
+
+    class ZeroLineCross(value: IndicatorData.() -> Double) : LineCross(0.0, value)
+    open class LineCross(val valueToCross: Double, val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
             val current = data.last().value()
             val prev = data.last(1).value()
-            return if (prev >= 0 && current < 0) {
+            return if (prev >= valueToCross && current < valueToCross) {
                 Position.Type.SHORT
-            } else if (prev <= 0 && current > 0) {
+            } else if (prev <= valueToCross && current > valueToCross) {
                 Position.Type.LONG
             } else {
                 null
@@ -74,6 +77,5 @@ sealed class IndicatorBehaviour {
                 return Position.Type.SHORT
             }
         }
-
     }
 }
