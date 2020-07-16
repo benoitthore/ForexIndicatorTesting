@@ -2,4 +2,10 @@ package com.bugsnag.example.kotlinmp
 
 expect fun platformMessage(): String
 expect fun platformId(): Int
-expect fun log(message : Any)
+
+interface ILog {
+    fun d(message: Any)
+    fun io(message: Any)
+}
+
+expect object Log : ILog

@@ -91,7 +91,7 @@ class MockMT4(val service: MT4Service) {
                 val volume = arrayPointer[2]
                 val stopLoss = arrayPointer[3]
                 val takeProfit = arrayPointer[4]
-                log("""
+                Log.d("""
                     Opening position:
                     type=$type
                     magicNumber=$magicNumber
