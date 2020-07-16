@@ -5,7 +5,7 @@ import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorData
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 
-interface MT4DataGatherer {
+interface MT4Handler {
     val ea: EA
     val indicators: List<Indicator> get() = ea.indicators
     fun onStart(startData: StartData)
@@ -15,9 +15,9 @@ interface MT4DataGatherer {
 }
 
 
-class EAWrapper(
+class MT4HandlerImpl(
         override val ea: EA
-) : MT4DataGatherer {
+) : MT4Handler {
 
     private val indicatorsHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()
     private val closePrices = mutableListOf<Double>()

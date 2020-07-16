@@ -2,9 +2,7 @@ package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.Indicator.*
-import com.bugsnag.example.kotlinmp.lib.IndicatorData
 import com.bugsnag.example.kotlinmp.lib.Position
-import com.bugsnag.example.kotlinmp.lib.Symbol
 import com.bugsnag.example.kotlinmp.lib.wrapper.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 
@@ -80,7 +78,7 @@ fun main() {
         }
 
     }
-    val wrapper = MT4ServiceImpl(EAWrapper(ea))
+    val wrapper = MT4ClientImpl(MT4HandlerImpl(ea))
 
     val mockMT4 = MockMT4(wrapper)
 

@@ -8,7 +8,6 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.throwException
 
 
-@Suppress("UNREACHABLE_CODE")
 fun getPosition(
         currentPrice: Double,
         pipSize: Double,
@@ -17,7 +16,11 @@ fun getPosition(
         atr: Double,
         equity: Double,
         setTP: Boolean): Position? {
+/*
+        /!\ READ THE ATR PROPERLY: should we shift the decimal place and where  ? /!\
 
+        IN VP'S ALGO THERE IS NO TAKE PROFIT, IT'S DONE MANUALLY AT CANDLE CLOSE
+ */
 
     return with(type) {
         val maxLoss = equity * 0.01
@@ -31,6 +34,8 @@ fun getPosition(
                         magicNumber = magicNumber,
                         volume = 1.0,
                         stopLoss = currentPrice _minus stopLossPips,
+
+                        //
                         takeProfit = if (setTP) currentPrice _plus takeProfitPips else null
                 )
             }

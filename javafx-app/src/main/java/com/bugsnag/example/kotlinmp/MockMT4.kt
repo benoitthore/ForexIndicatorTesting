@@ -3,7 +3,7 @@ package com.bugsnag.example.kotlinmp
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.Symbol
 import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4RequestId
-import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Service
+import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Client
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
@@ -21,7 +21,7 @@ GetClosePrice,
 This class should be converted to MQL4, we first want to test it
 
  */
-class MockMT4(val service: MT4Service) {
+class MockMT4(val service: MT4Client) {
 
     /*
     /!\ BE CAREFUL WHEN IMPLEMENTING THIS /!\

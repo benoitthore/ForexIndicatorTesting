@@ -5,7 +5,7 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 
-interface MT4Service {
+interface MT4Client {
 
     fun onStart(symbol: Int, pipPrice: Double)
 
@@ -21,9 +21,9 @@ interface MT4Service {
 
 }
 
-class MT4ServiceImpl(
-        private val handler: MT4DataGatherer
-) : MT4Service {
+class MT4ClientImpl(
+        private val handler: MT4Handler
+) : MT4Client {
 
     private val requestExchangeManager = RequestExchangeManager<MT4Request.DataRequest<*>>()
     private val actionExchangeManager = ActionExchangeManager(handler)
@@ -89,7 +89,7 @@ class RequestExchangeManager<T : MT4Request.DataRequest<*>> : MT4ExchangeManager
 
 }
 
-class ActionExchangeManager(private val handler: MT4DataGatherer) : MT4ExchangeManager<MT4Request.PositionAction>() {
+class ActionExchangeManager(private val handler: MT4Handler) : MT4ExchangeManager<MT4Request.PositionAction>() {
 
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
         if (requests.isNotEmpty()) {
