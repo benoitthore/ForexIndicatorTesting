@@ -2,12 +2,9 @@ package example
 
 import com.bugsnag.example.kotlinmp.Strategy
 import com.bugsnag.example.kotlinmp.VPEA
-import com.bugsnag.example.kotlinmp.getTestEA
-import com.bugsnag.example.kotlinmp.log
 import kotlinx.cinterop.*
 
 var i = 0
-
 
 @CName(externName = "testArray", shortName = "testArray")
 fun testArray(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleVar>, arraySize: Int): Boolean {
@@ -28,7 +25,11 @@ fun testFun(): Int = i++
 @CName(externName = "onNewBar", shortName = "onNewBar")
 fun onNewBar() {
     Impl.onNewBar()
+}
 
+@CName(externName = "onStart", shortName = "onStart")
+fun onNewBar(symbol : Int, pipPrice : Double) {
+    Impl.onStart(symbol, pipPrice)
 }
 
 @CName(externName = "goToActionMode", shortName = "goToActionMode")
