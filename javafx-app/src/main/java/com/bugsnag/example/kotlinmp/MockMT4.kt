@@ -73,7 +73,6 @@ class MockMT4(val service: MT4Service) {
             }
             MT4RequestId.GetEquity -> {
                 arrayPointer[0] = 10_000.0
-
             }
             MT4RequestId.GetIndicatorValue -> {
                 /*

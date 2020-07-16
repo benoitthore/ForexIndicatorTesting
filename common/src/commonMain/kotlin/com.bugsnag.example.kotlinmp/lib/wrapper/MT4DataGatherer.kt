@@ -28,7 +28,8 @@ class EAWrapper(
     }
 
     override fun onNewBar(): List<MT4Request.DataRequest<*>> =
-            indicators.map { MT4Request.DataRequest.GetIndicatorValue(it) } + MT4Request.DataRequest.GetClosePrice
+            indicators.map { MT4Request.DataRequest.GetIndicatorValue(it) } +
+                    MT4Request.DataRequest.GetClosePrice + MT4Request.DataRequest.GetEquity
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun responseCallback(map: Map<MT4Request.DataRequest<*>, Iterable<Double>>): List<MT4Request.PositionAction> {
