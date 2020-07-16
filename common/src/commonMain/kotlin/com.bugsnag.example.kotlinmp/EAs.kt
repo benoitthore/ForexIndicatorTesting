@@ -38,76 +38,63 @@ fun getPosition(
     }
 }
 
-private fun openBuy(values: EAData): Boolean {
-    return false
-}
 
-private fun openSell(values: EAData): Boolean {
-    return false
-}
-
-private fun closeBuy(values: EAData): Boolean {
-    return false
-}
-
-private fun closeSell(values: EAData): Boolean {
-    return false
-}
-
-fun getTestEA(): EA {
-
-    var openPosition: Position? = null
-
-    val entryIndicator: IndicatorBehaviour = IndicatorBehaviour.OnChartAboveOrBelowPrice { value1 }
-
+class VPEA(
+        val entryIndicator: IndicatorBehaviour = IndicatorBehaviour.OnChartAboveOrBelowPrice(indicatorAboveMeansLong = false) { value1 }
+) : EA {
     var pipSize: Double? = null
+        private set
     var symbol: Symbol? = null
+        private set
     var onStartCalled = false
+        private set
 
-    return EA.create(listOf(Indicator.ATR), {
+
+    override val indicators: List<Indicator>
+        get() = listOf(Indicator.ATR)
+
+    override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
+
+        if (!onStartCalled) {
+            throwException("On start hasn't been called")
+        }
+        val pipSize = pipSize ?: throwException("pipSize needed")
+        val symbol = symbol ?: throwException("symbol needed")
+        val equity = data.equity.lastOrNull() ?: throwException("equity needed")
+        val closePrice = data.closePrices.lastOrNull() ?: throwException("closePrice needed")
+
+        if (data.closePrices.size < 2) return emptyList()
+
+        val atr = data.indicatorsHistory[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
+
+        val ma = data.indicatorsHistory[Indicator.MA] ?: throwException("Moving average needed Needed")
+
+        val entrySignal = entryIndicator(data.closePrices, ma) ?: return emptyList()
+
+        val position = getPosition(
+                currentPrice = closePrice,
+                type = entrySignal,
+                magicNumber = 2,
+                atr = atr,
+                equity = equity,
+                pipSize = pipSize,
+                setTP = true
+        )
+
+
+        return listOfNotNull(position?.toAction())
+    }
+
+    override fun onStart(data: StartData) {
         if (onStartCalled) {
             throwException("On start has already been called")
         }
-        pipSize = it.pipSize
-        symbol = it.symbol
+        pipSize = data.pipSize
+        symbol = data.symbol
         onStartCalled = true
-    }) { (equity: List<Double>, closePrices: List<Double>, indicators: Map<Indicator, MutableList<IndicatorData>>) ->
-
-//        log("<EA>")
-        run {
-            if (!onStartCalled) {
-                throwException("On start hasn't been called")
-            }
-            val pipSize = pipSize ?: throwException("pipSize needed")
-            val symbol = symbol ?: throwException("symbol needed")
-            val equity = equity.lastOrNull() ?: throwException("equity needed")
-            val closePrice = closePrices.lastOrNull() ?: throwException("closePrice needed")
-
-            if (closePrices.size < 2) return@run emptyList<MT4Request.PositionAction>()
-
-
-            val atr = indicators[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
-
-            val ma = indicators[Indicator.MA] ?: throwException("Moving average needed Needed")
-
-            val entrySignal = entryIndicator(closePrices, ma) ?: return@create emptyList()
-
-            val position = getPosition(
-                    currentPrice = closePrice,
-                    type = entrySignal,
-                    magicNumber = 2,
-                    atr = atr,
-                    equity = equity,
-                    pipSize = pipSize,
-                    setTP = true
-            )
-
-
-            listOfNotNull(position?.toAction())
-        }.also {
-//            log("</EA>")
-        }
     }
+
 }
+
 
 private fun Position.toAction() = MT4Request.PositionAction.OpenPosition(this)

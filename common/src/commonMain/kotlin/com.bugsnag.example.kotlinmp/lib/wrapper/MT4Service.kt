@@ -93,16 +93,13 @@ class RequestExchangeManager<T : MT4Request.DataRequest<*>> : MT4ExchangeManager
 class ActionExchangeManager(private val handler: MT4DataGatherer) : MT4ExchangeManager<MT4Request.PositionAction>() {
 
     override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
-
         if (requests.isNotEmpty()) {
             requests.removeAt(0).let { action ->
-
                 handler.actionCallback(
                         action.buildFromResponse(arrayPointer)
                 )
             }
         }
-
 
         return requests.isNotEmpty()
     }

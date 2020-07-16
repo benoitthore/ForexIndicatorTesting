@@ -10,7 +10,7 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
 
 // This should trigger a long signal if MA goes above price
 fun main() {
-    val ea = getTestEA()
+    val ea = VPEA()
     ea.onStart(StartData(Symbol.EURUSD, 10.0))
     val indicatorsHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()
 

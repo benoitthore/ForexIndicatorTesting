@@ -23,10 +23,6 @@ class EAWrapper(
     private val closePrices = mutableListOf<Double>()
     private val equity = mutableListOf<Double>()
 
-    constructor(onStart: OnStart, vararg indicators: Indicator, onDataReceived: OnNewBar)
-            : this(EA.create(indicators.toList(), onStart, onDataReceived))
-
-
     override fun onStart(startData: StartData) {
         ea.onStart(startData)
     }

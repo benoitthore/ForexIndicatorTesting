@@ -1,6 +1,7 @@
 package example
 
 import com.bugsnag.example.kotlinmp.Strategy
+import com.bugsnag.example.kotlinmp.VPEA
 import com.bugsnag.example.kotlinmp.getTestEA
 import com.bugsnag.example.kotlinmp.log
 import kotlinx.cinterop.*
@@ -47,6 +48,6 @@ fun response(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<Double
 }
 
 
-private val Impl = Strategy.get(getTestEA())
+private val Impl = Strategy.get(VPEA())
 
 
