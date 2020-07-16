@@ -4,7 +4,8 @@ import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.Indicator.*
 import com.bugsnag.example.kotlinmp.lib.Position
 import com.bugsnag.example.kotlinmp.lib.wrapper.*
-import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4ClientImpl
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 
 // This should trigger a long signal if MA goes above price
 //fun main() {

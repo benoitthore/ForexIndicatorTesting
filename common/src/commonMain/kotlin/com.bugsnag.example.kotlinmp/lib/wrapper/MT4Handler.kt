@@ -3,7 +3,7 @@ package com.bugsnag.example.kotlinmp.lib.wrapper
 import com.bugsnag.example.kotlinmp.Log
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorData
-import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 
 interface MT4Handler {
     val ea: EA

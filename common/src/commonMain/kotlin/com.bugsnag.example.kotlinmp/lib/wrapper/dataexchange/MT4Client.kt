@@ -1,9 +1,12 @@
-package com.bugsnag.example.kotlinmp.lib.wrapper
+package com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange
 
 import com.bugsnag.example.kotlinmp.lib.Symbol
-import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
+import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Handler
+import com.bugsnag.example.kotlinmp.lib.wrapper.StartData
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
+import com.bugsnag.example.kotlinmp.utils.VisibleForTesting
 
 interface MT4Client {
 
@@ -22,12 +25,14 @@ interface MT4Client {
 }
 
 class MT4ClientImpl(
-        private val handler: MT4Handler
+        private val handler: MT4Handler,
+        private val requestExchangeManager: RequestExchangeManager<MT4Request.DataRequest<*>> = RequestExchangeManager(),
+        private val actionExchangeManager: ActionExchangeManager = ActionExchangeManager(handler)
 ) : MT4Client {
 
-    private val requestExchangeManager = RequestExchangeManager<MT4Request.DataRequest<*>>()
-    private val actionExchangeManager = ActionExchangeManager(handler)
-    private var currentManager: MT4ExchangeManager<*> = requestExchangeManager
+    @VisibleForTesting
+    var currentManager: MT4ExchangeManager<*> = requestExchangeManager
+        private set
 
     override fun onStart(symbol: Int, pipPrice: Double) {
         handler.onStart(StartData(Symbol.values()[symbol], pipPrice))
@@ -56,7 +61,6 @@ class MT4ClientImpl(
 
 }
 
-
 abstract class MT4ExchangeManager<T : MT4Request<*>> {
     var requests: MutableList<T> = mutableListOf()
     var responses: MutableMap<T, Iterable<Double>> = mutableMapOf()
@@ -75,31 +79,3 @@ abstract class MT4ExchangeManager<T : MT4Request<*>> {
 
 }
 
-class RequestExchangeManager<T : MT4Request.DataRequest<*>> : MT4ExchangeManager<T>() {
-    override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
-        if (requests.isNotEmpty()) {
-            requests.removeAt(0).let { action ->
-                val copy = arrayPointer.copy()
-                responses[action] = copy
-            }
-        }
-
-        return requests.isNotEmpty()
-    }
-
-}
-
-class ActionExchangeManager(private val handler: MT4Handler) : MT4ExchangeManager<MT4Request.PositionAction>() {
-
-    override fun response(actionPointer: AbstractedPointer<Int>, arrayPointer: AbstractedArrayPointer<Double>): Boolean {
-        if (requests.isNotEmpty()) {
-            requests.removeAt(0).let { action ->
-                handler.actionCallback(
-                        action.buildFromResponse(arrayPointer)
-                )
-            }
-        }
-
-        return requests.isNotEmpty()
-    }
-}

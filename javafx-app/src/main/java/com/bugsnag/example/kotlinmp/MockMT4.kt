@@ -2,8 +2,8 @@ package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.Symbol
-import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4RequestId
-import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Client
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4RequestId
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4Client
 import com.bugsnag.example.kotlinmp.utils.AbstractedArrayPointer
 import com.bugsnag.example.kotlinmp.utils.AbstractedPointer
 

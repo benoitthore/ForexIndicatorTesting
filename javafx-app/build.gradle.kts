@@ -21,7 +21,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
-
+    testImplementation("io.mockk:mockk:1.10.0")
     // https://mvnrepository.com/artifact/io.ktor/ktor-server-core
 
 

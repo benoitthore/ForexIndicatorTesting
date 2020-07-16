@@ -2,8 +2,8 @@ package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.wrapper.EA
 import com.bugsnag.example.kotlinmp.lib.wrapper.MT4HandlerImpl
-import com.bugsnag.example.kotlinmp.lib.wrapper.MT4Client
-import com.bugsnag.example.kotlinmp.lib.wrapper.MT4ClientImpl
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4Client
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4ClientImpl
 
 
 object Strategy {

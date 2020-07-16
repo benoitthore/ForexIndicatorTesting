@@ -1,4 +1,4 @@
-package com.bugsnag.example.kotlinmp.lib.wrapper.requests
+package com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorData

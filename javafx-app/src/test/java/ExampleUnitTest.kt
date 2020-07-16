@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 
 class ExampleUnitTest {
 
+    // https://github.com/mockk/mockk
     @Test
     fun test1() {
         val ea = VPEA(
@@ -34,7 +35,7 @@ class ExampleUnitTest {
         add(10,20).shouldBeEmpty() // not enough data
         add(30,20).first().type shouldEqual Position.Type.LONG
         add(10,20).first().type shouldEqual Position.Type.SHORT
-        add(10,20).shouldBeEmpty() // don't give signal twice
+        add(10,30).shouldBeEmpty() // don't give signal twice
 
     }
 }

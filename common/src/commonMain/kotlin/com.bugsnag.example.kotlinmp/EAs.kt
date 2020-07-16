@@ -4,7 +4,7 @@ import com.bugsnag.example.kotlinmp.lib.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.EA
 import com.bugsnag.example.kotlinmp.lib.wrapper.EAData
 import com.bugsnag.example.kotlinmp.lib.wrapper.StartData
-import com.bugsnag.example.kotlinmp.lib.wrapper.requests.MT4Request
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 import com.bugsnag.example.kotlinmp.utils.throwException
 
 
