@@ -1,5 +1,6 @@
 package com.bugsnag.example.kotlinmp
 
+import platform.posix.fclose
 import platform.posix.fflush
 import platform.posix.fopen
 import platform.posix.fprintf
@@ -20,6 +21,10 @@ private class Logger(val logFile: String) {
     }
 
     operator fun invoke(message: Any) = log(message)
+
+    fun close() {
+        fclose(logHandle)
+    }
 }
 
 
@@ -30,6 +35,11 @@ actual object Log : ILog {
     }
 
     override  fun io(message: Any) {
-        io(message)
+        inputLog(message)
+    }
+
+    fun close() {
+        inputLog.close()
+        defaultLog.close()
     }
 }

@@ -56,7 +56,7 @@ class VPEA(
 
 
     override val indicators: List<Indicator>
-        get() = listOf(Indicator.ATR)
+        get() = listOf(Indicator.ATR, Indicator.MA)
 
     override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
 
@@ -87,7 +87,9 @@ class VPEA(
         )
 
 
-        return listOfNotNull(position?.toAction())
+        return listOfNotNull(position?.toAction()).apply {
+            forEach { Log.d("OPEN POSITION ${it.position}") }
+        }
     }
 
     override fun onStart(data: StartData) {

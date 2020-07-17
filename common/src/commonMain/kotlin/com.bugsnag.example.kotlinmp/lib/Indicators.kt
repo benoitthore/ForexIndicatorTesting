@@ -1,5 +1,6 @@
 package com.bugsnag.example.kotlinmp.lib
 
+import com.bugsnag.example.kotlinmp.Log
 import com.bugsnag.example.kotlinmp.utils.last
 
 // Don't use runCatching
@@ -80,6 +81,8 @@ sealed class IndicatorBehaviour {
     class OnChartAboveOrBelowPrice(val indicatorAboveMeansLong: Boolean, val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
 
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            Log.d("Prices     : $prices")
+            Log.d("Indictator : ${data.map(value)}")
             val currPrice = prices.last()
             val prevPrice = prices.last(1)
 

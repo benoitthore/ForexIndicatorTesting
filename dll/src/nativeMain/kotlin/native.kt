@@ -1,10 +1,16 @@
 package example
 
+import com.bugsnag.example.kotlinmp.Log
 import com.bugsnag.example.kotlinmp.Strategy
 import com.bugsnag.example.kotlinmp.VPEA
 import kotlinx.cinterop.*
 
 var i = 0
+
+@CName(externName = "close", shortName = "close")
+fun close(){
+    Log.close()
+}
 
 @CName(externName = "testArray", shortName = "testArray")
 fun testArray(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleVar>, arraySize: Int): Boolean {
@@ -24,28 +30,40 @@ fun testFun(): Int = i++
 
 @CName(externName = "onNewBar", shortName = "onNewBar")
 fun onNewBar() {
+    Log.io("onNewBar")
     Impl.onNewBar()
 }
 
 @CName(externName = "onStart", shortName = "onStart")
-fun onNewBar(symbol : Int, pipPrice : Double) {
+fun onStart(symbol : Int, pipPrice : Double) {
+    Log.io("onStart $symbol $pipPrice")
     Impl.onStart(symbol, pipPrice)
 }
 
 @CName(externName = "goToActionMode", shortName = "goToActionMode")
 fun goToActionMode() {
+    Log.io("goToActionMode")
     Impl.goToActionMode()
 }
 
 @CName(externName = "request", shortName = "request")
 fun request(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleVar>, arraySize: Int): Boolean {
-    return Impl.request(actionPointer.abstractedVarPointer(), arrayPointer.abstractedArrayPointer(arraySize))
+    val abstractedActionPointer = actionPointer.abstractedVarPointer()
+    val abstractedArrayPointer = arrayPointer.abstractedArrayPointer(arraySize)
+    Log.io("Request-IN action=$abstractedActionPointer $abstractedArrayPointer")
+    val out = Impl.request(abstractedActionPointer, abstractedArrayPointer)
+    Log.io("Request-OUT action=$abstractedActionPointer $abstractedArrayPointer")
+    return out
 }
 
 
 @CName(externName = "response", shortName = "response")
 fun response(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleVar>, arraySize: Int) {
-    Impl.response(actionPointer.abstractedVarPointer(), arrayPointer.abstractedArrayPointer(arraySize))
+    val abstractedActionPointer = actionPointer.abstractedVarPointer()
+    val abstractedArrayPointer = arrayPointer.abstractedArrayPointer(arraySize)
+    Log.io("Response-IN action=$abstractedActionPointer $abstractedArrayPointer")
+    Impl.response(abstractedActionPointer, abstractedArrayPointer)
+    Log.io("Response-OUT action=$abstractedActionPointer $abstractedArrayPointer")
 }
 
 

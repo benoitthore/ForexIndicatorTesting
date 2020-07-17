@@ -12,6 +12,10 @@ fun CPointer<DoubleVar>.abstractedVarPointer() =
                 set(value) {
                     this@abstractedVarPointer.pointed.value = value
                 }
+
+            override fun toString(): String {
+                return "Pointer($value)"
+            }
         }
 
 fun CPointer<IntVar>.abstractedVarPointer() =
@@ -21,6 +25,10 @@ fun CPointer<IntVar>.abstractedVarPointer() =
                 set(value) {
                     this@abstractedVarPointer.pointed.value = value
                 }
+
+            override fun toString(): String {
+                return "Pointer($value)"
+            }
         }
 
 fun CArrayPointer<DoubleVar>.abstractedArrayPointer(size: Int) =
@@ -38,6 +46,10 @@ fun CArrayPointer<DoubleVar>.abstractedArrayPointer(size: Int) =
                 this@abstractedArrayPointer.set(index, value)
             }
 
+            override fun toString(): String {
+                return "ArrayPointer(${iterator().asSequence().toList()})"
+            }
+
         }
 
 fun CArrayPointer<IntVar>.abstractedArrayPointer(size: Int) =
@@ -49,5 +61,9 @@ fun CArrayPointer<IntVar>.abstractedArrayPointer(size: Int) =
 
             override fun set(index: Int, value: Int) {
                 this@abstractedArrayPointer.set(index, value)
+            }
+
+            override fun toString(): String {
+                return "ArrayPointer(${iterator().asSequence().toList()})"
             }
         }

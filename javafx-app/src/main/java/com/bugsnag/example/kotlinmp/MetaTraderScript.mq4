@@ -34,13 +34,13 @@ enum INDICATOR
 // TODO Generate this code programtically
 string indicatorName(INDICATOR indicator)
   {
-   if(StringCompare(indicator,"ATR") == 0)
+   if(indicator == ATR)
      {
-      return "ATR";
+      return "Examples\\ATR";
      }
-   if(StringCompare(indicator,"MA") == 0)
+   if(indicator == MA)
      {
-      return "Trend\\Moving Average";
+       return "Examples\\Custom Moving Average";
      }
    Alert("invalide indicator " + indicator);
    return NULL;
@@ -57,12 +57,14 @@ CTrade   *Trade;
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   testDll();
+
 //
 // Create a pointer to a ctrade object
 //
    Trade =  new CTrade();
    Trade.SetExpertMagicNumber(InpMagicNumber);
+
+   onStart(0,PipSize(Symbol()));
 
    Print("log");
    return INIT_SUCCEEDED;
@@ -81,27 +83,11 @@ void OnDeinit(const int reason)
 
   }
 
-
-//+------------------------------------------------------------------+
-//| Expert tick function                                             |
-//+------------------------------------------------------------------+
-void OnTick()
-  {
-   Print("OnTick");
-   if(!TradeAllowed())
-      return;        // Try again next time
-   if(!IsNewBar())
-      return;        // This EA only runs at the start of each bar
-   Print("doTick");
-// doTick();
-  }
-
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void doTick()
   {
-
    onNewBar();
    exchange();
    goToActionMode();
@@ -109,9 +95,6 @@ void doTick()
 
   }
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
 const double DEFAULT_VALUE = -1.0;
 
 //+------------------------------------------------------------------+
@@ -127,20 +110,20 @@ void exchange()
 
    do
      {
+
       //reset (probably not needed)
       reset(arrayPointer);
       actionPointer = (double) DEFAULT_VALUE;
       isRequesting = request(actionPointer, arrayPointer,ArraySize(arrayPointer));
-      Print("BEBEUZ:" + isRequesting);
+
       if(isRequesting)
         {
          processData((REQUEST_ID) actionPointer, arrayPointer);
          response(actionPointer, arrayPointer,ArraySize(arrayPointer));
         }
+
      }
    while(isRequesting);
-
-
   }
 
 //+------------------------------------------------------------------+
@@ -152,7 +135,7 @@ void processData(REQUEST_ID action,double &array[])
    if(action == GetClosePrice)
      {
       MqlRates BarData[1];
-      CopyRates(Symbol(), Period(), 1, 2, BarData); //Gets the price of the previous candle (originally was 0, 1 is 1, 2)
+      CopyRates(NULL, 0, 0, 1, BarData);
       array[0] = BarData[0].close;
      }
    else
@@ -163,13 +146,22 @@ void processData(REQUEST_ID action,double &array[])
       else
          if(action == GetIndicatorValue)
            {
-            int indicator = indicatorName((INDICATOR)array[0]);
+
+            string indicator = indicatorName((INDICATOR)array[0]);
             // + 1 because iCustom returns the last bar which should be really small
             int shift = (int) array[1] + 1;
+
+            int handle =  iCustom(Symbol(),Period(),indicator);
+
+
+            double tmp[] = { -1.0};
             for(int i = 0 ; i < 7 ; i++)
               {
-               array[i] = iCustom(Symbol(),NULL,indicator, i, shift);
+               CopyBuffer(handle, i,shift,1,tmp);
+               array[i] =tmp[0];
               }
+
+            IndicatorRelease(handle);
            }
          else
             if(action == GetIndicatorNumberOfParams)
@@ -202,26 +194,32 @@ void processData(REQUEST_ID action,double &array[])
                      openPrice         =  Bid;
                     }
 
-                  int   ticket   =  Trade.PositionOpen(
-                                       Symbol(), // symbol
-                                       orderType, // operation
-                                       volume, // volume
-                                       openPrice, // price
-                                       stopLoss, // stop loss
-                                       takeProfit, // take profit
-                                       NULL // comment
-
-                                    );
 
 
-                  if(ticket == -1)
-                    {
-                     array[0] = 0;
-                    }
-                  else
-                    {
-                     array[0] = 1;
-                    }
+                  /*
+
+                                    int   ticket   =  Trade.PositionOpen(
+                                                         Symbol(), // symbol
+                                                         orderType, // operation
+                                                         volume, // volume
+                                                         openPrice, // price
+                                                         stopLoss, // stop loss
+                                                         takeProfit, // take profit
+                                                         NULL // comment
+
+                                                      );
+
+
+                                    if(ticket == -1)
+                                      {
+                                       array[0] = 0;
+                                      }
+                                    else
+                                      {
+                                       array[0] = 1;
+                                      }
+                  */
+
                  }
                else
                   if(action == UpdatePosition)
@@ -247,6 +245,32 @@ void reset(double &array[])
       array[i] = DEFAULT_VALUE;
      }
   }
+
+//+------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
