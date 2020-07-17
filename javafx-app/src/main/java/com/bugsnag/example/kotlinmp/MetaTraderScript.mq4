@@ -40,7 +40,7 @@ string indicatorName(INDICATOR indicator)
      }
    if(indicator == MA)
      {
-       return "Examples\\Custom Moving Average";
+      return "Examples\\Custom Moving Average";
      }
    Alert("invalide indicator " + indicator);
    return NULL;
@@ -80,7 +80,19 @@ void OnDeinit(const int reason)
 // Clean up the trade object
 //
    delete   Trade;
+   close();
+  }
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void OnTick()
+  {
+   if(!IsNewBar())
+     {
+      return;
+     }
+   doTick();
   }
 
 //+------------------------------------------------------------------+
@@ -131,7 +143,6 @@ void exchange()
 //+------------------------------------------------------------------+
 void processData(REQUEST_ID action,double &array[])
   {
-
    if(action == GetClosePrice)
      {
       MqlRates BarData[1];
@@ -196,7 +207,7 @@ void processData(REQUEST_ID action,double &array[])
 
 
 
-                  /*
+
 
                                     int   ticket   =  Trade.PositionOpen(
                                                          Symbol(), // symbol
@@ -218,7 +229,7 @@ void processData(REQUEST_ID action,double &array[])
                                       {
                                        array[0] = 1;
                                       }
-                  */
+
 
                  }
                else
@@ -321,4 +332,6 @@ bool  CloseTrade(ENUM_ORDER_TYPE orderType) {
 
 }
 */
+//+------------------------------------------------------------------+
+
 //+------------------------------------------------------------------+
