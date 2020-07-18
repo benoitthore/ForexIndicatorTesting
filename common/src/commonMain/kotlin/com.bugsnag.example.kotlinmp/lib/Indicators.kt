@@ -69,6 +69,40 @@ sealed class IndicatorBehaviour {
         }
     }
 
+    class TwoLineCrossInsideRange(
+            val value1: IndicatorData.() -> Double,
+            val value2: IndicatorData.() -> Double,
+            val range: ClosedRange<Double>
+    ) : IndicatorBehaviour() {
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
+            TODO()
+        }
+    }
+
+    class ActivationIndicator(
+            val long: IndicatorData.() -> Double,
+            val short: IndicatorData.() -> Double
+    ) : IndicatorBehaviour() {
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            val prevLong = data.last(-1).long()
+            val currLong = data.last().long()
+
+            val prevShort = data.last(-1).short()
+            val currShort = data.last().short()
+
+            if (prevLong == -1.0 && currLong != -1.0) {
+                return Position.Type.LONG
+            }
+
+            if (prevShort == -1.0 && currShort != -1.0) {
+                return Position.Type.SHORT
+            }
+
+            return null
+        }
+
+    }
+
     class OutsideRange(
             val value1: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
