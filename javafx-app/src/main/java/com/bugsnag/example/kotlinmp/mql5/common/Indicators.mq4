@@ -35,24 +35,32 @@ string indicatorName(INDICATOR indicator)
 
 
 
-int indicatorHandles[2][1];
-void restIndicatorMap(){
-    for(int i = 0 ; i < ArraySize(indicatorHandles[i])  ; i++ ){
-        indicatorHandles[i] = -1;
-    }
-}
+int indicatorHandles[2];
 
-int getHandleForIndicator(INDICATOR indicator){
-    if(indicatorHandles[(int) indicator] == -1){
-        string name = indicatorName(indicator);
-        indicatorHandles[(int) indicator] == iCustom(Symbol(),Period(),name);
-    }
-    return indicatorHandles[(int) indicator]
-}
 
-void  releaseIndicators(){
-  for(int i = 0 ; i < ArraySize(indicatorHandles[i])  ; i++ ){
-        IndicatorRelease(indicatorHandles[i]);
-    }
-}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+int getHandleForIndicator(INDICATOR indicator)
+  {
+   int index =(int) indicator;
+      if(indicatorHandles[index] == 0)
+     {
+      string name = indicatorName(indicator);
+      indicatorHandles[index] = iCustom(Symbol(),Period(),name);
+     }
+   return indicatorHandles[index];
+  }
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void  releaseIndicators()
+  {
+   for(int i = 0 ; i < ArraySize(indicatorHandles)  ; i++)
+     {
+      IndicatorRelease(indicatorHandles[i]);
+     }
+  }
+
+//+------------------------------------------------------------------+
