@@ -11,6 +11,8 @@
 
 #include <kotlin.mqh>
 #include <CommonFunctions.mqh>
+#include <Indicators.mqh>
+#include <utils.mqh>
 
 
 
@@ -25,50 +27,6 @@ enum REQUEST_ID
    UpdatePosition,
    ClosePosition
   };
-
-enum INDICATOR
-  {
-   ATR,MA
-  };
-defined int NUM_INDICATORS = 2;
-
-
-int indicator[NUM_INDICATORS][10];
-//+------------------------------------------------------------------+
-//| REMOVE ME ON EA                           |
-//+------------------------------------------------------------------+
-void OnStart()
-  {
-
-   onStart(0,PipSize(Symbol()));
-   doTick();
-   doTick();
-   doTick();
-   doTick();
-   doTick();
-
-  }
-
-
-
-
-// TODO Generate this code programtically
-string indicatorName(INDICATOR indicator)
-  {
-   if(indicator == ATR)
-     {
-      return "Examples\\ATR";
-     }
-   if(indicator == MA)
-     {
-      return "Examples\\Custom Moving Average";
-     }
-   Alert("invalide indicator " + indicator);
-   return NULL;
-  }
-
-
-
 
 
 
@@ -136,19 +94,14 @@ void processData(REQUEST_ID action,double &array[])
          if(action == GetIndicatorValue)
            {
 
-            string indicator = indicatorName((INDICATOR)array[0]);
             // + 1 because iCustom returns the last bar which should be really small
             int shift = (int) array[1] + 1;
 
-            int handleA = iCustom(Symbol(),Period(),indicatorName(ATR));
-            int handleB = iCustom(Symbol(),Period(),indicatorName(MA));
+            int handle =  getHandleForIndicator((INDICATOR)array[0]);
 
-            int handle =  iCustom(Symbol(),Period(),indicator);
-
-            if(handle == -1)
-              {
-               1/(handle + 1);
-              }
+            if(handle == -1) {
+                1/(handle + 1);
+            }
 
             double tmp[] = { -1.0};
             for(int i = 0 ; i < 7 ; i++)
@@ -157,7 +110,6 @@ void processData(REQUEST_ID action,double &array[])
                array[i] =tmp[0];
               }
 
-            IndicatorRelease(handle);
            }
          else
             if(action == GetIndicatorNumberOfParams)
