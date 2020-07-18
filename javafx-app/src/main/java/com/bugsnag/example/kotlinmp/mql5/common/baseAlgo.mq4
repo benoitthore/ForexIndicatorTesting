@@ -14,6 +14,7 @@
 #include <Indicators.mqh>
 #include <utils.mqh>
 
+#include <Trade\Trade.mqh>
 
 
 
@@ -73,6 +74,7 @@ void exchange()
    while(isRequesting);
   }
 
+CTrade   *Trade;
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -144,29 +146,29 @@ void processData(REQUEST_ID action,double &array[])
 
 
 
-                  /*
 
-                                    int   ticket   =  Trade.PositionOpen(
-                                                         Symbol(), // symbol
-                                                         orderType, // operation
-                                                         volume, // volume
-                                                         openPrice, // price
-                                                         stopLoss, // stop loss
-                                                         takeProfit, // take profit
-                                                         NULL // comment
+                     int   ticket   =  Trade.PositionOpen(
+                                          Symbol(), // symbol
+                                          orderType, // operation
+                                          volume, // volume
+                                          openPrice, // price
+                                          stopLoss, // stop loss
+                                          takeProfit, // take profit
+                                          NULL // comment
 
-                                                      );
+                                       );
 
 
-                                    if(ticket == -1)
-                                      {
-                                       array[0] = 0;
-                                      }
-                                    else
-                                      {
-                                       array[0] = 1;
-                                      }
-                  */
+
+                     if(ticket == -1)
+                       {
+                        array[0] = 0;
+                       }
+                     else
+                       {
+                        array[0] = 1;
+                       }
+
 
                  }
                else
@@ -194,18 +196,6 @@ void reset(double &array[])
      }
   }
 
-//+------------------------------------------------------------------+
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void OnDeinit(const int reason)
-  {
-   Print("OnDeinit2");
-
-   close();
-  }
-//+------------------------------------------------------------------+
 
 
 
@@ -215,55 +205,3 @@ void OnDeinit(const int reason)
 
 
 
-
-
-
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-bool  IsNewBar()
-  {
-
-   static datetime priorTime   =  0;
-   datetime          currentTime =  iTime(Symbol(), Period(), 0);
-   bool              result      = (currentTime!=priorTime);
-   priorTime                     =  currentTime;
-   return(result);
-
-  }
-/*
-void  OpenTrade(ENUM_ORDER_TYPE  orderType) {
-
-   double   openPrice;
-
-   if (orderType==ORDER_TYPE_BUY) {
-      openPrice         =  Ask;
-   } else {
-      openPrice         =  Bid;
-   }
-
-   int   ticket   =  OrderSend(Symbol(), orderType, InpOrderSize, openPrice, 0, 0, 0, InpTradeComment, InpMagicNumber);
-
-}
-
-bool  CloseTrade(ENUM_ORDER_TYPE orderType) {
-
-   bool  result   =  true;
-
-   PrintFormat("Closing %s orders due to signal", EnumToString(orderType));
-
-   int   cnt      =  OrdersTotal();
-   for (int i = cnt-1; i>=0; i--) {
-      if (OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) {
-         if (OrderSymbol()==Symbol() && OrderMagicNumber()==InpMagicNumber && OrderType()==orderType) {
-            result   &= OrderClose(OrderTicket(), OrderLots(), OrderClosePrice(), 0, clrYellow);
-         }
-      }
-   }
-
-   return(result);
-
-}
-*/
-//+------------------------------------------------------------------+
