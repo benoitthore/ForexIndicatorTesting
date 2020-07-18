@@ -1,6 +1,7 @@
 package com.bugsnag.example.kotlinmp.lib
 
 import com.bugsnag.example.kotlinmp.Log
+import com.bugsnag.example.kotlinmp.lib.IndicatorData.Companion.DEFAULT_VALUE
 import com.bugsnag.example.kotlinmp.utils.last
 
 // Don't use runCatching
@@ -90,11 +91,11 @@ sealed class IndicatorBehaviour {
             val prevShort = data.last(-1).short()
             val currShort = data.last().short()
 
-            if (prevLong == -1.0 && currLong != -1.0) {
+            if (currLong != prevLong) {
                 return Position.Type.LONG
             }
 
-            if (prevShort == -1.0 && currShort != -1.0) {
+            if (currShort != prevShort) {
                 return Position.Type.SHORT
             }
 

@@ -31,11 +31,15 @@ enum class Symbol {
 }
 
 data class IndicatorData(
-        val value1: Double = 0.0,
-        val value2: Double = 0.0,
-        val value3: Double = 0.0,
-        val value4: Double = 0.0,
-        val value5: Double = 0.0,
-        val value6: Double = 0.0,
-        val value7: Double = 0.0
-)
+        val value1: Double = DEFAULT_VALUE,
+        val value2: Double = DEFAULT_VALUE,
+        val value3: Double = DEFAULT_VALUE,
+        val value4: Double = DEFAULT_VALUE,
+        val value5: Double = DEFAULT_VALUE,
+        val value6: Double = DEFAULT_VALUE,
+        val value7: Double = DEFAULT_VALUE
+){
+    companion object{
+        const val DEFAULT_VALUE : Double = 0.0
+    }
+}
