@@ -1,18 +1,19 @@
 //+------------------------------------------------------------------+
-//|                                                         VPEA.mq4 |
+//|                                                         test.mq5 |
 //|                        Copyright 2020, MetaQuotes Software Corp. |
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2020, MetaQuotes Software Corp."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
-#property strict
 
-#include <CommonFunctions.mqh>
+
+
 #include <kotlin.mqh>
+#include <CommonFunctions.mqh>
 
-input string               InpTradeComment         =  "VPEA";  // Trade comment
-input int InpMagicNumber = 0;
+
+
 
 enum REQUEST_ID
   {
@@ -29,6 +30,26 @@ enum INDICATOR
   {
    ATR,MA
   };
+defined int NUM_INDICATORS = 2;
+
+
+int indicator[NUM_INDICATORS][10];
+//+------------------------------------------------------------------+
+//| REMOVE ME ON EA                           |
+//+------------------------------------------------------------------+
+void OnStart()
+  {
+
+   onStart(0,PipSize(Symbol()));
+   doTick();
+   doTick();
+   doTick();
+   doTick();
+   doTick();
+
+  }
+
+
 
 
 // TODO Generate this code programtically
@@ -46,54 +67,10 @@ string indicatorName(INDICATOR indicator)
    return NULL;
   }
 
-//
-// Use CTrade, easier than doing our own coding
-//
-#include <Trade\Trade.mqh>
-CTrade   *Trade;
 
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-int OnInit()
-  {
 
-//
-// Create a pointer to a ctrade object
-//
-   Trade =  new CTrade();
-   Trade.SetExpertMagicNumber(InpMagicNumber);
 
-   onStart(0,PipSize(Symbol()));
 
-   Print("log");
-   return INIT_SUCCEEDED;
-  }
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void OnDeinit(const int reason)
-  {
-   Print("OnDeinit2");
-//
-// Clean up the trade object
-//
-   delete   Trade;
-   close();
-  }
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void OnTick()
-  {
-   if(!IsNewBar())
-     {
-      return;
-     }
-   doTick();
-  }
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -143,6 +120,7 @@ void exchange()
 //+------------------------------------------------------------------+
 void processData(REQUEST_ID action,double &array[])
   {
+
    if(action == GetClosePrice)
      {
       MqlRates BarData[1];
@@ -162,8 +140,15 @@ void processData(REQUEST_ID action,double &array[])
             // + 1 because iCustom returns the last bar which should be really small
             int shift = (int) array[1] + 1;
 
+            int handleA = iCustom(Symbol(),Period(),indicatorName(ATR));
+            int handleB = iCustom(Symbol(),Period(),indicatorName(MA));
+
             int handle =  iCustom(Symbol(),Period(),indicator);
 
+            if(handle == -1)
+              {
+               1/(handle + 1);
+              }
 
             double tmp[] = { -1.0};
             for(int i = 0 ; i < 7 ; i++)
@@ -207,7 +192,7 @@ void processData(REQUEST_ID action,double &array[])
 
 
 
-
+                  /*
 
                                     int   ticket   =  Trade.PositionOpen(
                                                          Symbol(), // symbol
@@ -229,7 +214,7 @@ void processData(REQUEST_ID action,double &array[])
                                       {
                                        array[0] = 1;
                                       }
-
+                  */
 
                  }
                else
@@ -259,19 +244,16 @@ void reset(double &array[])
 
 //+------------------------------------------------------------------+
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+  {
+   Print("OnDeinit2");
 
-
-
-
-
-
-
-
-
-
-
-
-
+   close();
+  }
+//+------------------------------------------------------------------+
 
 
 
@@ -332,6 +314,4 @@ bool  CloseTrade(ENUM_ORDER_TYPE orderType) {
 
 }
 */
-//+------------------------------------------------------------------+
-
 //+------------------------------------------------------------------+
