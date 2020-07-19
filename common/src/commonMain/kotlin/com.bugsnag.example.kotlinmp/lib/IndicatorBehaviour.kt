@@ -93,11 +93,11 @@ sealed class IndicatorBehaviour {
             val prevShort = data.last(1).short()
             val currShort = data.last().short()
 
-            if (currLong != prevLong) {
+            if (currLong != prevLong && prevLong == 0.0) {
                 return Position.Type.LONG
             }
 
-            if (currShort != prevShort) {
+            if (currShort != prevShort && prevShort == 0.0) {
                 return Position.Type.SHORT
             }
 
