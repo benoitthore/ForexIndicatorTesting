@@ -12,7 +12,7 @@ actual object Log : ILog {
     }
 
     override fun e(message: Any?) {
-        println("ERROR: message")
+       println("ERROR: $message")
     }
 
     override fun io(message: Any?) {

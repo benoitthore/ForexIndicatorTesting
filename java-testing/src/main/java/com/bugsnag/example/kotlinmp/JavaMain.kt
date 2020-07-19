@@ -2,6 +2,7 @@ package com.bugsnag.example.kotlinmp
 
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.Indicator.*
+import com.bugsnag.example.kotlinmp.lib.IndicatorBehaviour
 import com.bugsnag.example.kotlinmp.lib.Position
 import com.bugsnag.example.kotlinmp.lib.wrapper.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4ClientImpl
@@ -39,6 +40,15 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 
 fun main() {
 
+    val indicatorBehaviour = IndicatorBehaviour.ActivationIndicator(
+            short = { value1 },
+            long = { value2 }
+    )
+
+   println(
+           indicatorBehaviour(emptyList(), indicatorBehaviour.testWithThis)
+   )
+return
     getPosition(
             currentPrice = 0.0,
             pipSize = 0.0,
