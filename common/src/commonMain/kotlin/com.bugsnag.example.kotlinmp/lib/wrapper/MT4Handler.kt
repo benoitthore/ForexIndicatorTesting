@@ -54,9 +54,16 @@ class MT4HandlerImpl(
             }.run { }
         }
 
-        return ea.onDataReceived(EAData(
-                equity = equity, closePrices = closePrices, indicatorsHistory = indicatorsHistory
-        ))
+        val response = kotlin.runCatching {
+            ea.onDataReceived(EAData(
+                    equity = equity, closePrices = closePrices, indicatorsHistory = indicatorsHistory
+            ))
+        }
+                .apply {
+                    exceptionOrNull()?.let { Log.e(it) }
+                }
+                .getOrNull()
+        return response ?: emptyList()
     }
 
 

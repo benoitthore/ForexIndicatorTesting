@@ -4,8 +4,9 @@ expect fun platformMessage(): String
 expect fun platformId(): Int
 
 interface ILog {
-    fun d(message: Any)
-    fun io(message: Any)
+    fun d(message: Any?)
+    fun e(message: Any?)
+    fun io(message: Any?)
 }
 
 expect object Log : ILog

@@ -8,28 +8,48 @@ private val String.enumName
 
 private fun generateMappingFunction() {
 
+    println("""
+       string indicatorName(INDICATOR indicator)
+        {
+      
+    """.trimIndent())
+
     list.map {
-        it to it.enumName
+        "Externals\\\\$it" to it.enumName
     }.forEach { (fileName, enumName) ->
         println(
-                "if (indicator == $enumName) { return $fileName; } "
+                "if (indicator == $enumName) { return \"$fileName\"; } "
         )
     }
 
     println("Alert(\"Indicator not found\");")
 
+    println("""
+        return NULL;
+        }
+    """.trimIndent())
 
 }
 
 private fun generateEnum() {
+
+    println(" enum INDICATOR {")
     list.forEach {
         println("${it.enumName},")
     }
+    println("};")
 }
 
 fun main() {
-//    generateMappingFunction()
+    println("""
+        #include <kotlin.mqh>
+        
+        int indicator[${list.size}][10];
+        int indicatorHandles[${list.size}];
+        
+    """.trimIndent())
     generateEnum()
+    generateMappingFunction()
 }
 
 
@@ -62,6 +82,7 @@ val list = """
     coppock-indicator
     cronex-t-rsi-bbsw-indicador
     cumulative-volume-indicator
+    custom-moving-average
     cyber-cycle-indicator
     d-index-indicator
     derivative-oscillator

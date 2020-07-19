@@ -9,7 +9,7 @@ sealed class IndicatorBehaviour {
         private set
 
     operator fun invoke(prices: List<Double>, data: List<IndicatorData>): Position.Type? =
-            getSignal(prices, data).also { if (it != null) lastSignal = it }
+            kotlin.runCatching { getSignal(prices, data) }.getOrNull().also { if (it != null) lastSignal = it }
 
     protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type?
 
@@ -76,6 +76,11 @@ sealed class IndicatorBehaviour {
             val long: IndicatorData.() -> Double,
             val short: IndicatorData.() -> Double
     ) : IndicatorBehaviour() {
+
+val testWithThis = listOf(
+        IndicatorData(value1=0.0, value2=0.0, value3=0.0, value4=0.0, value5=0.0, value6=0.0, value7=0.0),
+                IndicatorData(value1=1.0749630000000001, value2=0.0, value3=0.0, value4=0.0, value5=0.0, value6=0.0, value7=0.0)
+)
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
             val prevLong = data.last(-1).long()
             val currLong = data.last().long()
@@ -108,8 +113,6 @@ sealed class IndicatorBehaviour {
     class OnChartAboveOrBelowPrice(val indicatorAboveMeansLong: Boolean, val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
 
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
-            Log.d("Prices     : $prices")
-            Log.d("Indictator : ${data.map(value)}")
             val currPrice = prices.last()
             val prevPrice = prices.last(1)
 

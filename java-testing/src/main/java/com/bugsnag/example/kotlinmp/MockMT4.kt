@@ -122,7 +122,7 @@ class MockMT4(val service: MT4Client) {
 
 
 private fun iCustom(indicator: String, index: Int, shift: Int): Double = when (indicator) {
-    Indicator.MA.name -> index.toDouble()
+    Indicator.ASCTREND_INDICATOR.name -> index.toDouble()
     Indicator.ATR.name -> Math.random() * 10
     else -> throw IllegalArgumentException("Nope")
 }

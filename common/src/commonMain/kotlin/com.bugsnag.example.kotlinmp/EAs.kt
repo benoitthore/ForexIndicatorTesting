@@ -31,7 +31,7 @@ fun getPosition(
     return with(type) {
         val maxLoss = equity * 0.01
         val stopLossPips = atr * 1.5
-        val takeProfitPips = atr * 1
+        val takeProfitPips = atr * 3
 
         when (type) {
             Position.Type.LONG, Position.Type.SHORT -> {
@@ -50,8 +50,13 @@ fun getPosition(
 }
 
 
+class EAConfig(val entryIndicator: Indicator, val entryIndicatorBehaviour: IndicatorBehaviour)
+
 class VPEA(
-        val entryIndicator: IndicatorBehaviour = IndicatorBehaviour.OnChartAboveOrBelowPrice(indicatorAboveMeansLong = false) { value1 }
+        val config: EAConfig = EAConfig(Indicator.ASCTREND_INDICATOR, IndicatorBehaviour.ActivationIndicator(
+                short = { value1 },
+                long = { value2 }
+        ))
 ) : EA {
     var pipSize: Double? = null
         private set
@@ -60,11 +65,14 @@ class VPEA(
     var onStartCalled = false
         private set
 
+    private val entryIndicator get() = config.entryIndicator
 
     override val indicators: List<Indicator>
-        get() = listOf(Indicator.ATR, Indicator.D_INDEX_INDICATOR)
+        get() = listOf(Indicator.ATR, entryIndicator)
 
     override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
+
+        Log.d(data.indicatorsHistory[entryIndicator]?.lastOrNull())
 
         if (!onStartCalled) {
             throwException("On start hasn't been called")
@@ -74,13 +82,15 @@ class VPEA(
         val equity = data.equity.lastOrNull() ?: throwException("equity needed")
         val closePrice = data.closePrices.lastOrNull() ?: throwException("closePrice needed")
 
-        if (data.closePrices.size < 2) return emptyList()
+        if (data.closePrices.size < 2) return emptyList<MT4Request.PositionAction>().also { Log.d("Needs 2 prices in ${data.closePrices}") }
 
         val atr = data.indicatorsHistory[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 
-        val ma = data.indicatorsHistory[Indicator.D_INDEX_INDICATOR] ?: throwException("D_INDEX_INDICATOR needed Needed")
+        val confirmationIndicatorValue = data.indicatorsHistory[entryIndicator]
+                ?: throwException("$entryIndicator needed Needed")
 
-        val entrySignal = entryIndicator(data.closePrices, ma) ?: return emptyList()
+        val entrySignal = config.entryIndicatorBehaviour(data.closePrices, confirmationIndicatorValue)
+                ?: return emptyList<MT4Request.PositionAction>().also { Log.d("No trading signal") }
 
         val position = getPosition(
                 currentPrice = closePrice,

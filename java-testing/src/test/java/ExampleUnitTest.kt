@@ -10,7 +10,7 @@ class ExampleUnitTest {
     @Test
     fun test1() {
         val ea = VPEA(
-                entryIndicator = IndicatorBehaviour.OnChartAboveOrBelowPrice(indicatorAboveMeansLong = true) { value1 }
+                entryIndicatorBehaviour = IndicatorBehaviour.OnChartAboveOrBelowPrice(indicatorAboveMeansLong = true) { value1 }
         )
         ea.onStart(StartData(Symbol.EURUSD, 10.0))
         val indicatorsHistory = mutableMapOf<Indicator, MutableList<IndicatorData>>()

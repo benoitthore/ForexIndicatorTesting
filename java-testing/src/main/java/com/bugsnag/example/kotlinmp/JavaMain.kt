@@ -63,7 +63,7 @@ fun main() {
 
     val ea = object : EA {
         override val indicators: List<Indicator>
-            get() = listOf(ATR, MA)
+            get() = listOf(ATR, ASCTREND_INDICATOR)
 
         override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
             data.equity.first()
