@@ -5,6 +5,7 @@ alternative-cci-indicator
 amka-indicator
 aroon-indicator
 asctrend-indicator
+atr
 averages-rainbow-indicator
 balance-of-market-power
 bears-vs-bulls-indicator

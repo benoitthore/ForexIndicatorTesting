@@ -4,14 +4,6 @@ import com.bugsnag.example.kotlinmp.Log
 import com.bugsnag.example.kotlinmp.lib.IndicatorData.Companion.DEFAULT_VALUE
 import com.bugsnag.example.kotlinmp.utils.last
 
-// Don't use runCatching
-//val Number.asPositionType: PositionType? get() = kotlin.runCatching { PositionType.values()[toInt()] }.getOrNull()
-
-
-enum class Indicator {
-    ATR, MA;
-}
-
 sealed class IndicatorBehaviour {
     var lastSignal: Position.Type? = null
         private set

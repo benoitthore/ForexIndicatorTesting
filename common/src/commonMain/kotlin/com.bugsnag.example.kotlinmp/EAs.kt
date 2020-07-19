@@ -17,10 +17,16 @@ fun getPosition(
         equity: Double,
         setTP: Boolean): Position? {
 /*
-        /!\ READ THE ATR PROPERLY: should we shift the decimal place and where  ? /!\
-
         IN VP'S ALGO THERE IS NO TAKE PROFIT, IT'S DONE MANUALLY AT CANDLE CLOSE
  */
+
+    // https://www.youtube.com/watch?v=ArUtqy-hUxw
+
+    // https://www.youtube.com/watch?v=IvYiJP1elxY
+    // For EURUSD 31 * pipSize = 0.0031 ->     31 pips is 0.0031 USD for a volume of
+    // Also, PriceToPips = price / pipSize
+
+    // https://www.youtube.com/watch?v=Ft1ITYO8S9Y
 
     return with(type) {
         val maxLoss = equity * 0.01
@@ -56,7 +62,7 @@ class VPEA(
 
 
     override val indicators: List<Indicator>
-        get() = listOf(Indicator.ATR, Indicator.MA)
+        get() = listOf(Indicator.ATR, Indicator.D_INDEX_INDICATOR)
 
     override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
 
@@ -72,7 +78,7 @@ class VPEA(
 
         val atr = data.indicatorsHistory[Indicator.ATR]?.last()?.value1 ?: throwException("ATR Needed")
 
-        val ma = data.indicatorsHistory[Indicator.MA] ?: throwException("Moving average needed Needed")
+        val ma = data.indicatorsHistory[Indicator.D_INDEX_INDICATOR] ?: throwException("D_INDEX_INDICATOR needed Needed")
 
         val entrySignal = entryIndicator(data.closePrices, ma) ?: return emptyList()
 
