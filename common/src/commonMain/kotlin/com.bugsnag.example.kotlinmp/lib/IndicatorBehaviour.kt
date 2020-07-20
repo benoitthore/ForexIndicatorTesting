@@ -81,11 +81,6 @@ sealed class IndicatorBehaviour {
             val short: IndicatorData.() -> Double
     ) : IndicatorBehaviour() {
 
-        val testWithThis = listOf(
-                IndicatorData(value1 = 0.0, value2 = 0.0, value3 = 0.0, value4 = 0.0, value5 = 0.0, value6 = 0.0, value7 = 0.0),
-                IndicatorData(value1 = 1.0749630000000001, value2 = 0.0, value3 = 0.0, value4 = 0.0, value5 = 0.0, value6 = 0.0, value7 = 0.0)
-        )
-
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
             val prevLong = data.last(1).long()
             val currLong = data.last().long()

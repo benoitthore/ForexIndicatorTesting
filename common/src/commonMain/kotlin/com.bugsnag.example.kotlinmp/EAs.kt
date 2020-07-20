@@ -50,7 +50,7 @@ fun getPosition(
 }
 
 
-class EAConfig(val entryIndicator: Indicator, val entryIndicatorBehaviour: IndicatorBehaviour)
+data class EAConfig(val entryIndicator: Indicator, val entryIndicatorBehaviour: IndicatorBehaviour)
 
 class VPEA(
         val config: EAConfig = EAConfig(Indicator.ASCTREND_INDICATOR, IndicatorBehaviour.ActivationIndicator(

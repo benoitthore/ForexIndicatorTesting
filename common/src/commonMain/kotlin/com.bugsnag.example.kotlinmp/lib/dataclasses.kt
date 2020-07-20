@@ -41,5 +41,12 @@ data class IndicatorData(
 ){
     companion object{
         const val DEFAULT_VALUE : Double = 0.0
+        val value1: IndicatorData.() -> Double = { value1 }
+        val value2: IndicatorData.() -> Double = { value2 }
+        val value3: IndicatorData.() -> Double = { value3 }
+        val value4: IndicatorData.() -> Double = { value4 }
+        val value5: IndicatorData.() -> Double = { value5 }
+        val value6: IndicatorData.() -> Double = { value6 }
+        val value7: IndicatorData.() -> Double = { value7 }
     }
 }

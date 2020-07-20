@@ -1,5 +1,6 @@
 package com.bugsnag.example.kotlinmp
 
+import com.bugsnag.example.kotlinmp.utils.throwException
 import platform.posix.fclose
 import platform.posix.fflush
 import platform.posix.fopen
@@ -8,11 +9,9 @@ import platform.posix.fprintf
 actual fun platformMessage() = "Hello, Kotlin Windows"
 actual fun platformId(): Int = 42
 
-private val defaultLog = Logger("C:\\Users\\Bebeuz\\AppData\\Roaming\\MetaQuotes\\Terminal\\73B7A2420D6397DFF9014A20F1201F97\\MQL5\\Libraries\\kotlin.log")
-private val inputLog = Logger("C:\\Users\\Bebeuz\\AppData\\Roaming\\MetaQuotes\\Terminal\\73B7A2420D6397DFF9014A20F1201F97\\MQL5\\Libraries\\kotlin_io.log")
 
 private class Logger(val logFile: String) {
-    val logHandle by lazy {
+    private val logHandle by lazy {
         fopen(logFile, "a")
     }
 
@@ -29,9 +28,22 @@ private class Logger(val logFile: String) {
     }
 }
 
-
+private val root = "C:\\Users\\Bebeuz\\AppData\\Roaming\\MetaQuotes\\Terminal\\73B7A2420D6397DFF9014A20F1201F97\\MQL5\\Libraries\\"
+private val commonErrorsFile = root + "errors.txt"
 
 actual object Log : ILog {
+    override var index: Int? = null
+
+    private fun indexOrThrow() = index ?: throwException("Log index not set") { message ->
+        val log = Logger(commonErrorsFile)
+        log(message)
+        log.close()
+    }
+
+    private val defaultLog by lazy { Logger(root + "${indexOrThrow()}_kotlin.log") }
+    private val inputLog by lazy { Logger(root + "${indexOrThrow()}_kotlin_io.log") }
+
+
     override fun d(message: Any?) {
         defaultLog(message)
     }
@@ -41,7 +53,7 @@ actual object Log : ILog {
         close()
     }
 
-    override  fun io(message: Any?) {
+    override fun io(message: Any?) {
         inputLog(message)
     }
 

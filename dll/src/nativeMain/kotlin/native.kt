@@ -3,14 +3,13 @@ package example
 import com.bugsnag.example.kotlinmp.Log
 import com.bugsnag.example.kotlinmp.Strategy
 import com.bugsnag.example.kotlinmp.VPEA
+import com.bugsnag.example.kotlinmp.lib.wrapper.EA
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4Client
+import com.bugsnag.example.kotlinmp.utils.throwException
 import kotlinx.cinterop.*
 
 var i = 0
 
-@CName(externName = "close", shortName = "close")
-fun close(){
-    Log.close()
-}
 
 @CName(externName = "testArray", shortName = "testArray")
 fun testArray(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleVar>, arraySize: Int): Boolean {
@@ -28,22 +27,40 @@ fun testArray(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<Doubl
 @CName(externName = "testFun", shortName = "testFun")
 fun testFun(): Int = i++
 
+@CName(externName = "close", shortName = "close")
+fun close() {
+    Log.close()
+}
+
+
+private var _Impl: MT4Client? = null
+private fun Impl(): MT4Client = _Impl ?: throwException("setTestIndex(int) not called")
+
+
+@CName(externName = "setTestIndex", shortName = "setTestIndex")
+fun setTestIndex(index: Int) {
+    Log.index = index
+    Log.io("setTestIndex(index)")
+    _Impl = Strategy.getVPEA(index)
+}
+
+
 @CName(externName = "onNewBar", shortName = "onNewBar")
 fun onNewBar() {
     Log.io("onNewBar")
-    Impl.onNewBar()
+    Impl().onNewBar()
 }
 
 @CName(externName = "onStart", shortName = "onStart")
-fun onStart(symbol : Int, pipPrice : Double) {
+fun onStart(symbol: Int, pipPrice: Double) {
     Log.io("onStart $symbol $pipPrice")
-    Impl.onStart(symbol, pipPrice)
+    Impl().onStart(symbol, pipPrice)
 }
 
 @CName(externName = "goToActionMode", shortName = "goToActionMode")
 fun goToActionMode() {
     Log.io("goToActionMode")
-    Impl.goToActionMode()
+    Impl().goToActionMode()
 }
 
 @CName(externName = "request", shortName = "request")
@@ -51,7 +68,7 @@ fun request(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<DoubleV
     val abstractedActionPointer = actionPointer.abstractedVarPointer()
     val abstractedArrayPointer = arrayPointer.abstractedArrayPointer(arraySize)
     Log.io("Request-IN action=$abstractedActionPointer $abstractedArrayPointer")
-    val out = Impl.request(abstractedActionPointer, abstractedArrayPointer)
+    val out = Impl().request(abstractedActionPointer, abstractedArrayPointer)
     Log.io("Request-OUT action=$abstractedActionPointer $abstractedArrayPointer")
     return out
 }
@@ -62,11 +79,7 @@ fun response(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<Double
     val abstractedActionPointer = actionPointer.abstractedVarPointer()
     val abstractedArrayPointer = arrayPointer.abstractedArrayPointer(arraySize)
     Log.io("Response-IN action=$abstractedActionPointer $abstractedArrayPointer")
-    Impl.response(abstractedActionPointer, abstractedArrayPointer)
+    Impl().response(abstractedActionPointer, abstractedArrayPointer)
     Log.io("Response-OUT action=$abstractedActionPointer $abstractedArrayPointer")
 }
-
-
-private val Impl = Strategy.get(VPEA())
-
 
