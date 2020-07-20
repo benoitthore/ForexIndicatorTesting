@@ -32,17 +32,9 @@ private val root = "C:\\Users\\Bebeuz\\AppData\\Roaming\\MetaQuotes\\Terminal\\7
 private val commonErrorsFile = root + "errors.txt"
 
 actual object Log : ILog {
-    override var index: Int? = null
 
-    private fun indexOrThrow() = index ?: throwException("Log index not set") { message ->
-        val log = Logger(commonErrorsFile)
-        log(message)
-        log.close()
-    }
-
-    private val defaultLog by lazy { Logger(root + "${indexOrThrow()}_kotlin.log") }
-    private val inputLog by lazy { Logger(root + "${indexOrThrow()}_kotlin_io.log") }
-
+    private val defaultLog by lazy { Logger(root + "kotlin.log") }
+    private val inputLog by lazy { Logger(root + "_kotlin_io.log") }
 
     override fun d(message: Any?) {
         defaultLog(message)

@@ -12,3 +12,13 @@ fun throwException(message: String, logE: ((Any?) -> Unit) = { Log.e(it) }): Not
     throw Exception(message)
 }
 
+fun throwException(exception: Throwable, logE: ((Any?) -> Unit) = { Log.e(it) }): Nothing {
+    logE(exception)
+    throw exception
+}
+
+fun <T> Result<T>.getOrLogException(): T {
+    exceptionOrNull()?.let { throwException(it) }
+    return getOrNull()!!
+}
+
