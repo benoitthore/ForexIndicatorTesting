@@ -34,7 +34,7 @@ private val commonErrorsFile = root + "errors.txt"
 actual object Log : ILog {
 
     private val defaultLog by lazy { Logger(root + "kotlin.log") }
-    private val inputLog by lazy { Logger(root + "_kotlin_io.log") }
+    private val inputLog by lazy { Logger(root + "kotlin_io.log") }
 
     override fun d(message: Any?) {
         defaultLog(message)
