@@ -32,7 +32,7 @@ private val root = "C:\\Users\\Bebeuz\\AppData\\Roaming\\MetaQuotes\\Terminal\\7
 private val commonErrorsFile = root + "errors.txt"
 
 actual object Log : ILog {
-    override var index: Int? = null
+    override var index: Int? = 0
 
     private fun indexOrThrow() = index ?: throwException("Log index not set") { message ->
         val log = Logger(commonErrorsFile)
