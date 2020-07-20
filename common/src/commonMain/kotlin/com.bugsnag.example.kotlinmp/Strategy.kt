@@ -12,9 +12,10 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4ClientImpl
 object Strategy {
     fun get(ea: EA): MT4Client = MT4ClientImpl(MT4HandlerImpl(ea))
     fun getVPEA(config: EAConfig) = get(VPEA(config))
-    fun getVPEA(configIndex: Int) = getVPEA(Builder.configList[configIndex])
+    fun getVPEA(configIndex: Int) = getVPEA(Builder().configList[configIndex])
 
-    object Builder {
+
+    class Builder {
 
         val value1 = IndicatorData.value1
         val value2 = IndicatorData.value2

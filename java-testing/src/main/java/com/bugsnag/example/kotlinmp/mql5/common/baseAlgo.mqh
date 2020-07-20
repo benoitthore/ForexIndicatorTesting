@@ -101,9 +101,10 @@ void processData(REQUEST_ID action,double &array[])
 
             int handle =  getHandleForIndicator((INDICATOR)array[0]);
 
-            if(handle == -1) {
-                1/(handle + 1);
-            }
+            if(handle == -1)
+              {
+               1/(handle + 1);
+              }
 
             double tmp[] = { -1.0};
             for(int i = 0 ; i < 7 ; i++)
@@ -145,41 +146,43 @@ void processData(REQUEST_ID action,double &array[])
                     }
 
 
+              Trade.SetExpertMagicNumber(magicNumber);
+
+                  int   ticket   =  Trade.PositionOpen(
+                                       Symbol(), // symbol
+                                       orderType, // operation
+                                       volume, // volume
+                                       openPrice, // price
+                                       stopLoss, // stop loss
+                                       takeProfit, // take profit
+                                       NULL // comment
+
+                                    );
 
 
-                     int   ticket   =  Trade.PositionOpen(
-                                          Symbol(), // symbol
-                                          orderType, // operation
-                                          volume, // volume
-                                          openPrice, // price
-                                          stopLoss, // stop loss
-                                          takeProfit, // take profit
-                                          NULL // comment
 
-                                       );
-
-
-
-                     if(ticket == -1)
-                       {
-                        array[0] = 0;
-                       }
-                     else
-                       {
-                        array[0] = 1;
-                       }
+                  if(ticket == -1)
+                    {
+                     array[0] = 0;
+                    }
+                  else
+                    {
+                     array[0] = 1;
+                    }
 
 
                  }
                else
                   if(action == UpdatePosition)
                     {
+                    //Trade.SetExpertMagicNumber(magicNumber);
                      //TODO
 
                     }
                   else
                      if(action == ClosePosition)
                        {
+                       //Trade.SetExpertMagicNumber(magicNumber);
                         //TODO
 
                        }
@@ -205,3 +208,4 @@ void reset(double &array[])
 
 
 
+//+------------------------------------------------------------------+
