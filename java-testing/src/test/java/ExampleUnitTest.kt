@@ -1,8 +1,10 @@
 import com.bugsnag.example.kotlinmp.EAConfig
+import com.bugsnag.example.kotlinmp.Strategy
 import com.bugsnag.example.kotlinmp.VPEA
 import com.bugsnag.example.kotlinmp.lib.*
 import com.bugsnag.example.kotlinmp.lib.wrapper.EAData
 import com.bugsnag.example.kotlinmp.lib.wrapper.StartData
+import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4ClientImpl
 import org.junit.jupiter.api.Test
 
 class ExampleUnitTest {
@@ -41,13 +43,13 @@ class ExampleUnitTest {
 
     @Test
     fun testActivationIndicator() {
-        val indicatorBehaviour = IndicatorBehaviour.ActivationIndicator(
-                short = { value1 },
-                long = { value2 }
-        )
-
-        indicatorBehaviour(emptyList(), indicatorBehaviour.testWithThis) shouldEqual Position.Type.LONG
-
+        val vpea = (Strategy.getVPEA(73) as MT4ClientImpl).handler.ea as VPEA
+        vpea.config.entryIndicator shouldEqual Indicator.ASCTREND_INDICATOR
+        vpea.config.entryIndicatorBehaviour.invoke(emptyList(),
+                listOf(
+                        IndicatorData(0.0), IndicatorData(1.0)
+                )
+        ) shouldEqual Position.Type.LONG
     }
 
 }

@@ -25,7 +25,7 @@ interface MT4Client {
 }
 
 class MT4ClientImpl(
-        private val handler: MT4Handler,
+        @VisibleForTesting     val handler: MT4Handler,
         private val requestExchangeManager: RequestExchangeManager<MT4Request.DataRequest<*>> = RequestExchangeManager(),
         private val actionExchangeManager: ActionExchangeManager = ActionExchangeManager(handler)
 ) : MT4Client {
