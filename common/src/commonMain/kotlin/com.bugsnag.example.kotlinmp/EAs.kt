@@ -26,25 +26,19 @@ fun getPosition(
     // For EURUSD 31 * pipSize = 0.0031 ->     31 pips is 0.0031 USD for a volume of
     // Also, PriceToPips = price / pipSize
 
-    // PipSize is 0.0001
-    // 1 volume is 10 000 units
-
     // https://www.youtube.com/watch?v=Ft1ITYO8S9Y
 
-
     return with(type) {
-        val risk = equity * 0.02
+        val maxLoss = equity * 0.01
         val stopLossPips = atr * 1.5
-        val takeProfitPips = atr * 1.5
-
-        val pipValue = risk / (1.5 * atr)
+        val takeProfitPips = atr * 3
 
         when (type) {
             Position.Type.LONG, Position.Type.SHORT -> {
                 Position(
                         type = type,
                         magicNumber = magicNumber,
-                        volume = pipValue * pipSize,
+                        volume = 1.0,
                         stopLoss = currentPrice _minus stopLossPips,
 
                         //
@@ -76,11 +70,7 @@ class VPEA(
     override val indicators: List<Indicator>
         get() = listOf(Indicator.ATR, entryIndicator)
 
-    var traded = false
-
     override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
-
-        if (traded) return emptyList()
 
         Log.d(data.indicatorsHistory[entryIndicator]?.lastOrNull())
 
@@ -114,11 +104,7 @@ class VPEA(
 
 
         return listOfNotNull(position?.toAction()).apply {
-
-            forEach {
-                traded = true
-                Log.d("OPEN POSITION ${it.position}")
-            }
+            forEach { Log.d("OPEN POSITION ${it.position}") }
         }
     }
 
