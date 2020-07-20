@@ -41,13 +41,23 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 
 fun main() {
 
+
+    for (eaConfig in Strategy.Builder().configList) {
+        println(eaConfig)
+    }
+
+
+    return
+
     val index = 1
-    Log.index = index
     Log.io("setTestIndex(index)")
     Strategy.getVPEA(index)
 
-    println(Strategy.Builder.configList.size)
-    Strategy.Builder.configList.forEachIndexed { index, eaConfig ->
+    println(Strategy.Builder().configList.size)
+
+
+
+    Strategy.Builder().configList.forEachIndexed { index, eaConfig ->
         if (eaConfig.entryIndicator == ASCTREND_INDICATOR) {
             println("$index -> ${eaConfig.entryIndicatorBehaviour::class.simpleName}")
         }
