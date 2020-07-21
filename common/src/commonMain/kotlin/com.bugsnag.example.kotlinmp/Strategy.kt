@@ -3,6 +3,8 @@ package com.bugsnag.example.kotlinmp
 import com.bugsnag.example.kotlinmp.lib.Indicator
 import com.bugsnag.example.kotlinmp.lib.IndicatorBehaviour
 import com.bugsnag.example.kotlinmp.lib.IndicatorData
+import com.bugsnag.example.kotlinmp.lib.IndicatorData.Companion.value3
+import com.bugsnag.example.kotlinmp.lib.IndicatorData.Companion.value4
 import com.bugsnag.example.kotlinmp.lib.wrapper.EA
 import com.bugsnag.example.kotlinmp.lib.wrapper.MT4HandlerImpl
 import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.MT4Client
@@ -25,15 +27,20 @@ object Strategy {
                 IndicatorBehaviour.TwoLineCross(value2, value1),
 
                 IndicatorBehaviour.ZeroLineCross(value1),
-                IndicatorBehaviour.TwoLineCrossInsideRange(value2, value1, 30.0..70.0),
-                IndicatorBehaviour.TwoLineCrossInsideRange(value1, value2, 30.0..70.0),
-                IndicatorBehaviour.TwoLineCrossOutsideRange(value1, value2, 30.0..70.0),
-                IndicatorBehaviour.TwoLineCrossOutsideRange(value2, value1, 30.0..70.0),
 
                 IndicatorBehaviour.ActivationIndicator(value1, value2),
                 IndicatorBehaviour.ActivationIndicator(value2, value1),
+                IndicatorBehaviour.ActivationIndicator(value3, value4),
+                IndicatorBehaviour.ActivationIndicator(value4, value3),
+
                 IndicatorBehaviour.OnChartAboveOrBelowPrice(true, value1),
-                IndicatorBehaviour.OnChartAboveOrBelowPrice(false, value1)
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(false, value1),
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(true, value2),
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(false, value2),
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(true, value3),
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(false, value3),
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(true, value4),
+                IndicatorBehaviour.OnChartAboveOrBelowPrice(false, value4)
         )
         val configList: List<EAConfig> = Indicator.values().flatMap { indicator ->
             indicatorBehaviourList.map { indicatorBehaviour ->

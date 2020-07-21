@@ -50,6 +50,29 @@ fun main() {
     """.trimIndent())
     generateEnum()
     generateMappingFunction()
+
+    println("""
+          
+int getHandleForIndicator(INDICATOR indicator)
+  {
+   int index =(int) indicator;
+   if(indicatorHandles[index] == 0)
+     {
+      string name = indicatorName(indicator);
+      indicatorHandles[index] = iCustom(Symbol(),Period(),name);
+     }
+   return indicatorHandles[index];
+  }
+
+void  releaseIndicators()
+  {
+   for(int i = 0 ; i < ArraySize(indicatorHandles)  ; i++)
+     {
+      IndicatorRelease(indicatorHandles[i]);
+     }
+  }
+
+    """.trimIndent())
 }
 
 
@@ -58,6 +81,7 @@ val list = """
     absolute-strength-indicator
     alf-of-oscillator
     alternative-cci-indicator
+    aroon-up-down
     amka-indicator
     aroon-indicator
     asctrend-indicator
@@ -139,7 +163,7 @@ val list = """
     vidya-indicateur
     vsa-candle-indicator
     watr-indikator
-""".trimIndent().split("\n")
+""".trimIndent().split("\n").sorted()
 
 
 
