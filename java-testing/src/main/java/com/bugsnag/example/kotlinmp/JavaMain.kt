@@ -42,12 +42,13 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 fun main() {
 
 
+
+
     println(Strategy.Builder().configList.size)
     Strategy.Builder().configList.forEachIndexed { index, eaConfig ->
-        if (eaConfig.entryIndicator == ASCTREND_INDICATOR) {
+        if (eaConfig.entryIndicator == CUSTOM_MOVING_AVERAGE) {
             println("$index -> ${eaConfig.entryIndicatorBehaviour::class.simpleName}")
         }
-    }
 
     return
     val ea = object : EA {

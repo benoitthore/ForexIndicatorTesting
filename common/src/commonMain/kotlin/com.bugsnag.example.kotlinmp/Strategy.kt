@@ -37,7 +37,7 @@ object Strategy {
         )
         val configList: List<EAConfig> = Indicator.values().flatMap { indicator ->
             indicatorBehaviourList.map { indicatorBehaviour ->
-                EAConfig(indicator, indicatorBehaviour)
+                EAConfig(entry = IndicatorConfig(indicator, indicatorBehaviour))
             }
         }
     }

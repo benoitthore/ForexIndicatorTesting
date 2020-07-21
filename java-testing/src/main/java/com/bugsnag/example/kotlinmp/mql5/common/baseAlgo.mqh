@@ -134,7 +134,7 @@ void processData(REQUEST_ID action,double &array[])
                   double stopLoss = array[3];
                   double takeProfit = array[4];
 
-                  double volume = CalculateLotSize(stopLoss,accountPercentage);
+
 
                   double   openPrice;
 
@@ -147,6 +147,9 @@ void processData(REQUEST_ID action,double &array[])
                      openPrice         =  Bid;
                     }
 
+                  int stopLossPips = MathAbs((openPrice - stopLoss) * MathPow(10,_Digits));
+
+                  double volume = CalculateLotSize(stopLossPips,accountPercentage);
 
                   Trade.SetExpertMagicNumber(magicNumber);
 
@@ -155,8 +158,8 @@ void processData(REQUEST_ID action,double &array[])
                                        orderType, // operation
                                        volume, // volume
                                        openPrice, // price
-                                       stopLoss, // stop loss
-                                       takeProfit, // take profit
+                                       NormalizeDouble(stopLoss,_Digits), // stop loss
+                                       NormalizeDouble(takeProfit,_Digits), // take profit
                                        NULL // comment
 
                                     );
