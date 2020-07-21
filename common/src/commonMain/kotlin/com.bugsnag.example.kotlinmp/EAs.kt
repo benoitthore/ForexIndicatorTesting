@@ -31,11 +31,11 @@ fun getPosition(
     inline fun Double.round() = this.roundToDecimal(4)
 
     return with(type) {
-        val risk = equity * 0.01
-        val stopLossPips = atr * 1.5
-        val takeProfitPips = atr * 3
 
-        val volume = (pipSize / 10) * risk / (1.5 * atr)
+        val stopLossPips = atr * 1.5
+        val takeProfitPips = atr * 2.5
+
+
 
         when (type) {
             Position.Type.LONG, Position.Type.SHORT -> {
@@ -47,7 +47,7 @@ fun getPosition(
 //                        volume = 1.5000001, // not working
 
 //                        volume = volume.roundToDecimal(1),
-                        volume = 1.0,
+                        accountPercentage = 0.02,
                         stopLoss = (currentPrice _minus stopLossPips).round(),
 
                         //

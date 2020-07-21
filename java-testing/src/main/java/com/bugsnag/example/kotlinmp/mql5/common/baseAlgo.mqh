@@ -130,9 +130,11 @@ void processData(REQUEST_ID action,double &array[])
 
                   ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)((int) array[0]);
                   int magicNumber =  array[1];
-                  double volume = array[2];
+                  double accountPercentage = array[2];
                   double stopLoss = array[3];
                   double takeProfit = array[4];
+
+                  double volume = CalculateLotSize(stopLoss,accountPercentage);
 
                   double   openPrice;
 
@@ -146,7 +148,7 @@ void processData(REQUEST_ID action,double &array[])
                     }
 
 
-              Trade.SetExpertMagicNumber(magicNumber);
+                  Trade.SetExpertMagicNumber(magicNumber);
 
                   int   ticket   =  Trade.PositionOpen(
                                        Symbol(), // symbol
@@ -175,14 +177,14 @@ void processData(REQUEST_ID action,double &array[])
                else
                   if(action == UpdatePosition)
                     {
-                    //Trade.SetExpertMagicNumber(magicNumber);
+                     //Trade.SetExpertMagicNumber(magicNumber);
                      //TODO
 
                     }
                   else
                      if(action == ClosePosition)
                        {
-                       //Trade.SetExpertMagicNumber(magicNumber);
+                        //Trade.SetExpertMagicNumber(magicNumber);
                         //TODO
 
                        }

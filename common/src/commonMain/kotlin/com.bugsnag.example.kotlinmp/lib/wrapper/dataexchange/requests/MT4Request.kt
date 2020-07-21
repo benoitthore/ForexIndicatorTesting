@@ -69,7 +69,7 @@ sealed class MT4Request<T : Any>(val actionId: Enum<MT4RequestId>) {
             position.apply {
                 arrayPointer[0] = type.ordinal.toDouble()
                 arrayPointer[1] = magicNumber.toDouble()
-                arrayPointer[2] = volume
+                arrayPointer[2] = accountPercentage
                 arrayPointer[3] = stopLoss
                 arrayPointer[4] = takeProfit ?: 0.0
             }

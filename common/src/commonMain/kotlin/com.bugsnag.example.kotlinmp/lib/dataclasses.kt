@@ -5,7 +5,7 @@ import com.bugsnag.example.kotlinmp.utils.throwException
 data class Position(
         val type: Type,
         val magicNumber: Byte, //using bytes so MT4 code can do magicNumber + Some value (to run the EA on multiple TF)
-        val volume: Double,
+        val accountPercentage: Double,
         val stopLoss: Double,
         val takeProfit: Double? = null) {
     enum class Type {
