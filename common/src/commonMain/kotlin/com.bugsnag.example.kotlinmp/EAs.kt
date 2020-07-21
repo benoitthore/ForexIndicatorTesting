@@ -5,6 +5,7 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.EA
 import com.bugsnag.example.kotlinmp.lib.wrapper.EAData
 import com.bugsnag.example.kotlinmp.lib.wrapper.StartData
 import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
+import com.bugsnag.example.kotlinmp.utils.roundToDecimal
 import com.bugsnag.example.kotlinmp.utils.throwException
 
 
@@ -15,7 +16,7 @@ fun getPosition(
         magicNumber: Byte,
         atr: Double,
         equity: Double,
-        setTP: Boolean): Position? {
+        setTP: Boolean): Position {
 /*
         IN VP'S ALGO THERE IS NO TAKE PROFIT, IT'S DONE MANUALLY AT CANDLE CLOSE
  */
@@ -27,22 +28,30 @@ fun getPosition(
     // Also, PriceToPips = price / pipSize
 
     // https://www.youtube.com/watch?v=Ft1ITYO8S9Y
+    inline fun Double.round() = this.roundToDecimal(4)
 
     return with(type) {
-        val maxLoss = equity * 0.01
+        val risk = equity * 0.01
         val stopLossPips = atr * 1.5
         val takeProfitPips = atr * 3
+
+        val volume = (pipSize / 10) * risk / (1.5 * atr)
 
         when (type) {
             Position.Type.LONG, Position.Type.SHORT -> {
                 Position(
                         type = type,
                         magicNumber = magicNumber,
+//                        volume = 1.3358141310052032, // not working
+//                        volume = 1.5, // working
+//                        volume = 1.5000001, // not working
+
+//                        volume = volume.roundToDecimal(1),
                         volume = 1.0,
-                        stopLoss = currentPrice _minus stopLossPips,
+                        stopLoss = (currentPrice _minus stopLossPips).round(),
 
                         //
-                        takeProfit = if (setTP) currentPrice _plus takeProfitPips else null
+                        takeProfit = if (setTP) (currentPrice _plus takeProfitPips).round() else null
                 )
             }
         }
@@ -70,7 +79,10 @@ class VPEA(
     override val indicators: List<Indicator>
         get() = listOf(Indicator.ATR, entryIndicator)
 
+    private var shouldTrade = true
     override fun onDataReceived(data: EAData): List<MT4Request.PositionAction> {
+//        return listOf(getPosition(1.0, 0.0001, Position.Type.LONG, 2, 10.0, 10000.0, true).toAction())
+        if (!shouldTrade) return emptyList()
 
         Log.d(data.indicatorsHistory[entryIndicator]?.lastOrNull())
 
@@ -104,6 +116,10 @@ class VPEA(
 
 
         return listOfNotNull(position?.toAction()).apply {
+            if (isNotEmpty()) {
+//                Uncomment to trade 1 time only for debugging purposes
+//                shouldTrade = false
+            }
             forEach { Log.d("OPEN POSITION ${it.position}") }
         }
     }

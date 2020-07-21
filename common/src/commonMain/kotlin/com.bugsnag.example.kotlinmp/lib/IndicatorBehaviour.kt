@@ -38,14 +38,14 @@ sealed class IndicatorBehaviour {
             val shortLine: IndicatorData.() -> Double
 
     ) : IndicatorBehaviour() {
-        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
             val current1 = data.last().longLine()
             val prev1 = data.last(1).longLine()
 
             val current2 = data.last().shortLine()
             val prev2 = data.last(1).shortLine()
 
-            TODO()
+            return null
 //            return if (prev >= 0 && current < 0) {
 //                Position.Type.SHORT
 //            } else if (prev <= 0 && current > 0) {
@@ -61,8 +61,8 @@ sealed class IndicatorBehaviour {
             val value2: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
     ) : IndicatorBehaviour() {
-        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
-            TODO()
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            return null
         }
     }
 
@@ -71,8 +71,8 @@ sealed class IndicatorBehaviour {
             val value2: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
     ) : IndicatorBehaviour() {
-        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
-            TODO()
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            return null
         }
     }
 
@@ -105,8 +105,8 @@ sealed class IndicatorBehaviour {
             val value1: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
     ) : IndicatorBehaviour() {
-        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type {
-            TODO()
+        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            return null
         }
     }
 
