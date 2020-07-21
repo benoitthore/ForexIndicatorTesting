@@ -39,39 +39,69 @@ sealed class IndicatorBehaviour {
 
     ) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
-            val current1 = data.last().longLine()
-            val prev1 = data.last(1).longLine()
+            val currentLong = data.last().longLine()
+            val prevLong = data.last(1).longLine()
 
-            val current2 = data.last().shortLine()
-            val prev2 = data.last(1).shortLine()
+            val currentShort = data.last().shortLine()
+            val prevShort = data.last(1).shortLine()
 
+            if (currentLong > currentShort && prevLong < prevShort) {
+                return Position.Type.LONG
+            }
+
+            if (currentShort > currentLong && prevShort < prevLong) {
+                return Position.Type.SHORT
+            }
             return null
-//            return if (prev >= 0 && current < 0) {
-//                Position.Type.SHORT
-//            } else if (prev <= 0 && current > 0) {
-//                Position.Type.LONG
-//            } else {
-//                Position.Type.NONE
-//            }
         }
     }
 
     class TwoLineCrossOutsideRange(
-            val value1: IndicatorData.() -> Double,
-            val value2: IndicatorData.() -> Double,
+            val longLine: IndicatorData.() -> Double,
+            val shortLine: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
     ) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            val currentLong = data.last().longLine()
+            val prevLong = data.last(1).longLine()
+
+            val currentShort = data.last().shortLine()
+            val prevShort = data.last(1).shortLine()
+            if (currentLong in range || currentShort in range) {
+                return null
+            }
+            if (currentLong > currentShort && prevLong < prevShort) {
+                return Position.Type.LONG
+            }
+
+            if (currentShort > currentLong && prevShort < prevLong) {
+                return Position.Type.SHORT
+            }
             return null
         }
     }
 
     class TwoLineCrossInsideRange(
-            val value1: IndicatorData.() -> Double,
-            val value2: IndicatorData.() -> Double,
+            val longLine: IndicatorData.() -> Double,
+            val shortLine: IndicatorData.() -> Double,
             val range: ClosedRange<Double>
     ) : IndicatorBehaviour() {
         override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
+            val currentLong = data.last().longLine()
+            val prevLong = data.last(1).longLine()
+
+            val currentShort = data.last().shortLine()
+            val prevShort = data.last(1).shortLine()
+            if (currentLong !in range || currentShort !in range) {
+                return null
+            }
+            if (currentLong > currentShort && prevLong < prevShort) {
+                return Position.Type.LONG
+            }
+
+            if (currentShort > currentLong && prevShort < prevLong) {
+                return Position.Type.SHORT
+            }
             return null
         }
     }
@@ -99,15 +129,6 @@ sealed class IndicatorBehaviour {
             return null
         }
 
-    }
-
-    class OutsideRange(
-            val value1: IndicatorData.() -> Double,
-            val range: ClosedRange<Double>
-    ) : IndicatorBehaviour() {
-        override fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type? {
-            return null
-        }
     }
 
     class OnChartAboveOrBelowPrice(val indicatorAboveMeansLong: Boolean, val value: IndicatorData.() -> Double) : IndicatorBehaviour() {
