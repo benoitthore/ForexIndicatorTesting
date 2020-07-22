@@ -16,6 +16,9 @@ sealed class IndicatorBehaviour {
                     .also { if (it != null) lastSignal = it }
 
     protected abstract fun getSignal(prices: List<Double>, data: List<IndicatorData>): Position.Type?
+    override fun toString(): String {
+        return "IndicatorBehaviour(${this::class.simpleName})"
+    }
 
     class ZeroLineCross(value: IndicatorData.() -> Double) : LineCross(0.0, value)
 

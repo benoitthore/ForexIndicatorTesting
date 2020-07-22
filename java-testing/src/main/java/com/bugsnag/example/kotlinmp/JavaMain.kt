@@ -38,14 +38,18 @@ import com.bugsnag.example.kotlinmp.lib.wrapper.dataexchange.requests.MT4Request
 //    add(30,20)
 //    add(10,20)
 //}
+operator fun <T> List<T>.get(vararg indices : Int) : List<T> = indices.toList().map { get(it) }
 
 fun main() {
 
 
+    println(Strategy.Builder().configList[1110,683,606])
     println(Strategy.Builder().configList.size)
+    return
+
     Strategy.Builder().configList.forEachIndexed { index, eaConfig ->
-        if (eaConfig.entry.indicator == CUSTOM_MOVING_AVERAGE) {
-            println("$index -> ${eaConfig.entry.indicator::class.simpleName}")
+        if (eaConfig.entry.indicator == AROON_UP_DOWN) {
+            println("$index -> ${eaConfig.entry}")
         }
     }
 
