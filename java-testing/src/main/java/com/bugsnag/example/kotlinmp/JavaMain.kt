@@ -48,7 +48,7 @@ fun main() {
             println("$index -> ${eaConfig.entry.indicator::class.simpleName}")
         }
     }
-    
+
     return
     val ea = object : EA {
         override val indicators: List<Indicator>
