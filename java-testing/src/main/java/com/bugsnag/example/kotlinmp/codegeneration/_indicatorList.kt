@@ -18,7 +18,7 @@ private fun generateMappingFunction() {
         "Externals\\\\$it" to it.enumName
     }.forEach { (fileName, enumName) ->
         println(
-                "if (indicator == $enumName) { return \"$fileName\"; } "
+                "if (indicator == INDICATOR::$enumName) { return \"$fileName\"; } "
         )
     }
 
@@ -42,8 +42,6 @@ private fun generateEnum() {
 
 fun main() {
     println("""
-        #include <kotlin.mqh>
-        
         int indicator[${list.size}][10];
         int indicatorHandles[${list.size}];
         
@@ -51,32 +49,12 @@ fun main() {
     generateEnum()
     generateMappingFunction()
 
-    println("""
-          
-int getHandleForIndicator(INDICATOR indicator)
-  {
-   int index =(int) indicator;
-   if(indicatorHandles[index] == 0)
-     {
-      string name = indicatorName(indicator);
-      indicatorHandles[index] = iCustom(Symbol(),Period(),name);
-     }
-   return indicatorHandles[index];
-  }
 
-void  releaseIndicators()
-  {
-   for(int i = 0 ; i < ArraySize(indicatorHandles)  ; i++)
-     {
-      IndicatorRelease(indicatorHandles[i]);
-     }
-  }
-
-    """.trimIndent())
 }
 
 
 val list = """
+    --none--
     3d-oscillator-2
     absolute-strength-indicator
     alf-of-oscillator

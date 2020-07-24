@@ -28,6 +28,13 @@ fun testArray(actionPointer: CPointer<IntVar>, arrayPointer: CArrayPointer<Doubl
 @CName(externName = "testFun", shortName = "testFun")
 fun testFun(): Int = i++
 
+class TestS(rawPtr: NativePtr) : CStructVar(rawPtr) {
+    val a = 0;
+}
+@CName(externName = "testStruct", shortName = "testStruct")
+fun testStruct(rawPtr: NativePtr) {
+ memScoped {  }
+}
 @CName(externName = "close", shortName = "close")
 fun close() {
     Log.close()
